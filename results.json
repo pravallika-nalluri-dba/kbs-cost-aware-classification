@@ -110,6 +110,33 @@
     "step": 0.01,
     "n": 99
   },
+  "reference_threshold": {
+    "2": 0.3333333333333333,
+    "5": 0.16666666666666666,
+    "10": 0.09090909090909091,
+    "20": 0.047619047619047616
+  },
+  "validation_brier": {
+    "LogisticRegression": 0.14564036805438246,
+    "RandomForest": 0.13424006615966724,
+    "HistGradientBoosting": 0.13683560879327633,
+    "XGBoost": 0.13558524532114807
+  },
+  "low_grid_r20": {
+    "grid": "0.001 to 0.009 in steps of 0.001, compared with the primary 0.01 grid",
+    "a_model": "HistGradientBoosting",
+    "a_threshold": 0.009,
+    "a_validation_cost": 0.7718333333333334,
+    "a_below_0.01": true,
+    "b_model": "RandomForest",
+    "b_threshold": 0.06,
+    "b_validation_cost": 0.7645,
+    "b_below_0.01": false,
+    "a_test_cost": 0.7835,
+    "b_test_cost": 0.7755,
+    "a_display_name": "histogram GB",
+    "b_display_name": "random forest"
+  },
   "validation_f1_at_0.50": {
     "LogisticRegression": 0.36941964285714285,
     "RandomForest": 0.46583541147132174,
@@ -822,6 +849,28 @@
         },
         "n_seeds_tuned_cost_below_0.50": 19,
         "n_seeds_decision_first_lower_cost": 13,
+        "n_seeds_prediction_first_lower_cost": 5,
+        "n_seeds_strategy_tie": 2,
+        "across_split_threshold_gain": {
+          "n_splits": 20,
+          "mean": 0.014533333333333339,
+          "ci_low": 0.011791041666666663,
+          "ci_high": 0.016992291666666676,
+          "includes_zero": false,
+          "n_resamples": 1000,
+          "seed": 42,
+          "method": "percentile bootstrap of the mean over split seeds"
+        },
+        "across_split_strategy_gap": {
+          "n_splits": 20,
+          "mean": 0.0028083333333333376,
+          "ci_low": 0.001266666666666674,
+          "ci_high": 0.004733750000000005,
+          "includes_zero": false,
+          "n_resamples": 1000,
+          "seed": 42,
+          "method": "percentile bootstrap of the mean over split seeds"
+        },
         "prediction_first_models": [
           "HistGradientBoosting",
           "RandomForest",
@@ -861,6 +910,28 @@
         },
         "n_seeds_tuned_cost_below_0.50": 20,
         "n_seeds_decision_first_lower_cost": 7,
+        "n_seeds_prediction_first_lower_cost": 10,
+        "n_seeds_strategy_tie": 3,
+        "across_split_threshold_gain": {
+          "n_splits": 20,
+          "mean": 0.17969166666666664,
+          "ci_low": 0.173906875,
+          "ci_high": 0.1851920833333333,
+          "includes_zero": false,
+          "n_resamples": 1000,
+          "seed": 42,
+          "method": "percentile bootstrap of the mean over split seeds"
+        },
+        "across_split_strategy_gap": {
+          "n_splits": 20,
+          "mean": -0.0005833333333333135,
+          "ci_low": -0.005534791666666662,
+          "ci_high": 0.004026875000000016,
+          "includes_zero": true,
+          "n_resamples": 1000,
+          "seed": 42,
+          "method": "percentile bootstrap of the mean over split seeds"
+        },
         "prediction_first_models": [
           "HistGradientBoosting",
           "RandomForest",
@@ -900,6 +971,28 @@
         },
         "n_seeds_tuned_cost_below_0.50": 20,
         "n_seeds_decision_first_lower_cost": 13,
+        "n_seeds_prediction_first_lower_cost": 4,
+        "n_seeds_strategy_tie": 3,
+        "across_split_threshold_gain": {
+          "n_splits": 20,
+          "mean": 0.7184333333333333,
+          "ci_low": 0.7043154166666666,
+          "ci_high": 0.7324052083333332,
+          "includes_zero": false,
+          "n_resamples": 1000,
+          "seed": 42,
+          "method": "percentile bootstrap of the mean over split seeds"
+        },
+        "across_split_strategy_gap": {
+          "n_splits": 20,
+          "mean": 0.01572499999999999,
+          "ci_low": 0.008324166666666648,
+          "ci_high": 0.02423416666666667,
+          "includes_zero": false,
+          "n_resamples": 1000,
+          "seed": 42,
+          "method": "percentile bootstrap of the mean over split seeds"
+        },
         "prediction_first_models": [
           "HistGradientBoosting",
           "RandomForest",
@@ -939,6 +1032,28 @@
         },
         "n_seeds_tuned_cost_below_0.50": 20,
         "n_seeds_decision_first_lower_cost": 17,
+        "n_seeds_prediction_first_lower_cost": 1,
+        "n_seeds_strategy_tie": 2,
+        "across_split_threshold_gain": {
+          "n_splits": 20,
+          "mean": 2.044616666666667,
+          "ci_low": 2.017327708333334,
+          "ci_high": 2.0734852083333335,
+          "includes_zero": false,
+          "n_resamples": 1000,
+          "seed": 42,
+          "method": "percentile bootstrap of the mean over split seeds"
+        },
+        "across_split_strategy_gap": {
+          "n_splits": 20,
+          "mean": 0.019558333333333327,
+          "ci_low": 0.011024583333333334,
+          "ci_high": 0.029709583333333327,
+          "includes_zero": false,
+          "n_resamples": 1000,
+          "seed": 42,
+          "method": "percentile bootstrap of the mean over split seeds"
+        },
         "prediction_first_models": [
           "HistGradientBoosting",
           "RandomForest",
@@ -946,7 +1061,23 @@
         ]
       }
     },
-    "note": "Min, median, and max are over split seeds. They are not a confidence interval. The bootstrap interval is only for seed 42."
+    "note": "Min, median, and max are over split seeds. They are not a confidence interval. The seed-42 bootstrap interval resamples the test accounts and does not refit. The across-split interval is a separate percentile bootstrap of the mean of the 20 split-level differences.",
+    "low_grid_r20": {
+      "n_splits_prediction_first_below_0.01": 9,
+      "n_splits_decision_first_below_0.01": 1,
+      "seed42": {
+        "a_model": "HistGradientBoosting",
+        "a_threshold": 0.009,
+        "a_validation_cost": 0.7718333333333334,
+        "a_test_cost": 0.7835,
+        "a_below_0.01": true,
+        "b_model": "RandomForest",
+        "b_threshold": 0.06,
+        "b_validation_cost": 0.7645,
+        "b_test_cost": 0.7755,
+        "b_below_0.01": false
+      }
+    }
   },
   "repeats": [
     {
@@ -994,6 +1125,18 @@
           "cost_at_0.50": 2.8771666666666667,
           "relative_difference": 0.007677543186180429
         }
+      },
+      "low_grid_r20": {
+        "a_model": "HistGradientBoosting",
+        "a_threshold": 0.009,
+        "a_validation_cost": 0.7718333333333334,
+        "a_test_cost": 0.7835,
+        "a_below_0.01": true,
+        "b_model": "RandomForest",
+        "b_threshold": 0.06,
+        "b_validation_cost": 0.7645,
+        "b_test_cost": 0.7755,
+        "b_below_0.01": false
       }
     },
     {
@@ -1041,6 +1184,18 @@
           "cost_at_0.50": 2.8758333333333335,
           "relative_difference": 0.010133678309616246
         }
+      },
+      "low_grid_r20": {
+        "a_model": "HistGradientBoosting",
+        "a_threshold": 0.008,
+        "a_validation_cost": 0.7781666666666667,
+        "a_test_cost": 0.7835,
+        "a_below_0.01": true,
+        "b_model": "XGBoost",
+        "b_threshold": 0.02,
+        "b_validation_cost": 0.7703333333333333,
+        "b_test_cost": 0.7651666666666667,
+        "b_below_0.01": false
       }
     },
     {
@@ -1088,6 +1243,18 @@
           "cost_at_0.50": 2.887166666666667,
           "relative_difference": 0.0019371502367627367
         }
+      },
+      "low_grid_r20": {
+        "a_model": "XGBoost",
+        "a_threshold": 0.02,
+        "a_validation_cost": 0.7693333333333333,
+        "a_test_cost": 0.7743333333333333,
+        "a_below_0.01": false,
+        "b_model": "RandomForest",
+        "b_threshold": 0.08,
+        "b_validation_cost": 0.749,
+        "b_test_cost": 0.7728333333333334,
+        "b_below_0.01": false
       }
     },
     {
@@ -1135,6 +1302,18 @@
           "cost_at_0.50": 2.7551666666666668,
           "relative_difference": 0.013379369874838117
         }
+      },
+      "low_grid_r20": {
+        "a_model": "HistGradientBoosting",
+        "a_threshold": 0.006,
+        "a_validation_cost": 0.7771666666666667,
+        "a_test_cost": 0.7775,
+        "a_below_0.01": true,
+        "b_model": "RandomForest",
+        "b_threshold": 0.06,
+        "b_validation_cost": 0.7748333333333334,
+        "b_test_cost": 0.762,
+        "b_below_0.01": false
       }
     },
     {
@@ -1182,6 +1361,18 @@
           "cost_at_0.50": 2.793833333333333,
           "relative_difference": 0.1085450346420323
         }
+      },
+      "low_grid_r20": {
+        "a_model": "HistGradientBoosting",
+        "a_threshold": 0.003,
+        "a_validation_cost": 0.7776666666666666,
+        "a_test_cost": 0.7776666666666666,
+        "a_below_0.01": true,
+        "b_model": "RandomForest",
+        "b_threshold": 0.06,
+        "b_validation_cost": 0.757,
+        "b_test_cost": 0.772,
+        "b_below_0.01": false
       }
     },
     {
@@ -1229,6 +1420,18 @@
           "cost_at_0.50": 2.8173333333333335,
           "relative_difference": 0.04216238781047792
         }
+      },
+      "low_grid_r20": {
+        "a_model": "HistGradientBoosting",
+        "a_threshold": 0.007,
+        "a_validation_cost": 0.7755,
+        "a_test_cost": 0.7746666666666666,
+        "a_below_0.01": true,
+        "b_model": "RandomForest",
+        "b_threshold": 0.05,
+        "b_validation_cost": 0.7693333333333333,
+        "b_test_cost": 0.7648333333333334,
+        "b_below_0.01": false
       }
     },
     {
@@ -1276,6 +1479,18 @@
           "cost_at_0.50": 2.7718333333333334,
           "relative_difference": 0.017693455553186993
         }
+      },
+      "low_grid_r20": {
+        "a_model": "HistGradientBoosting",
+        "a_threshold": 0.01,
+        "a_validation_cost": 0.774,
+        "a_test_cost": 0.7818333333333334,
+        "a_below_0.01": false,
+        "b_model": "RandomForest",
+        "b_threshold": 0.06,
+        "b_validation_cost": 0.7596666666666667,
+        "b_test_cost": 0.768,
+        "b_below_0.01": false
       }
     },
     {
@@ -1323,6 +1538,18 @@
           "cost_at_0.50": 2.841,
           "relative_difference": 0.04069520983467575
         }
+      },
+      "low_grid_r20": {
+        "a_model": "XGBoost",
+        "a_threshold": 0.03,
+        "a_validation_cost": 0.775,
+        "a_test_cost": 0.7863333333333333,
+        "a_below_0.01": false,
+        "b_model": "RandomForest",
+        "b_threshold": 0.06,
+        "b_validation_cost": 0.764,
+        "b_test_cost": 0.7543333333333333,
+        "b_below_0.01": false
       }
     },
     {
@@ -1370,6 +1597,18 @@
           "cost_at_0.50": 2.7843333333333335,
           "relative_difference": -0.006081668114682939
         }
+      },
+      "low_grid_r20": {
+        "a_model": "HistGradientBoosting",
+        "a_threshold": 0.008,
+        "a_validation_cost": 0.7761666666666667,
+        "a_test_cost": 0.7746666666666666,
+        "a_below_0.01": true,
+        "b_model": "RandomForest",
+        "b_threshold": 0.05,
+        "b_validation_cost": 0.7683333333333333,
+        "b_test_cost": 0.772,
+        "b_below_0.01": false
       }
     },
     {
@@ -1417,6 +1656,18 @@
           "cost_at_0.50": 2.8211666666666666,
           "relative_difference": 0.052218782249742024
         }
+      },
+      "low_grid_r20": {
+        "a_model": "HistGradientBoosting",
+        "a_threshold": 0.04,
+        "a_validation_cost": 0.7645,
+        "a_test_cost": 0.8075,
+        "a_below_0.01": false,
+        "b_model": "RandomForest",
+        "b_threshold": 0.07,
+        "b_validation_cost": 0.7568333333333334,
+        "b_test_cost": 0.7653333333333333,
+        "b_below_0.01": false
       }
     },
     {
@@ -1464,6 +1715,18 @@
           "cost_at_0.50": 2.7616666666666667,
           "relative_difference": 0.010129310344827619
         }
+      },
+      "low_grid_r20": {
+        "a_model": "XGBoost",
+        "a_threshold": 0.02,
+        "a_validation_cost": 0.7753333333333333,
+        "a_test_cost": 0.7733333333333333,
+        "a_below_0.01": false,
+        "b_model": "HistGradientBoosting",
+        "b_threshold": 0.02,
+        "b_validation_cost": 0.7651666666666667,
+        "b_test_cost": 0.7655,
+        "b_below_0.01": false
       }
     },
     {
@@ -1511,6 +1774,18 @@
           "cost_at_0.50": 2.858833333333333,
           "relative_difference": 0.02665813606312637
         }
+      },
+      "low_grid_r20": {
+        "a_model": "HistGradientBoosting",
+        "a_threshold": 0.03,
+        "a_validation_cost": 0.7738333333333334,
+        "a_test_cost": 0.7815,
+        "a_below_0.01": false,
+        "b_model": "RandomForest",
+        "b_threshold": 0.08,
+        "b_validation_cost": 0.7696666666666667,
+        "b_test_cost": 0.7606666666666667,
+        "b_below_0.01": false
       }
     },
     {
@@ -1558,6 +1833,18 @@
           "cost_at_0.50": 2.939,
           "relative_difference": 0.021450021450021516
         }
+      },
+      "low_grid_r20": {
+        "a_model": "XGBoost",
+        "a_threshold": 0.02,
+        "a_validation_cost": 0.7705,
+        "a_test_cost": 0.777,
+        "a_below_0.01": false,
+        "b_model": "RandomForest",
+        "b_threshold": 0.06,
+        "b_validation_cost": 0.7631666666666667,
+        "b_test_cost": 0.7603333333333333,
+        "b_below_0.01": false
       }
     },
     {
@@ -1605,6 +1892,18 @@
           "cost_at_0.50": 2.834,
           "relative_difference": 0.026537489469250233
         }
+      },
+      "low_grid_r20": {
+        "a_model": "XGBoost",
+        "a_threshold": 0.03,
+        "a_validation_cost": 0.7661666666666667,
+        "a_test_cost": 0.7913333333333333,
+        "a_below_0.01": false,
+        "b_model": "RandomForest",
+        "b_threshold": 0.07,
+        "b_validation_cost": 0.756,
+        "b_test_cost": 0.7703333333333333,
+        "b_below_0.01": false
       }
     },
     {
@@ -1652,6 +1951,18 @@
           "cost_at_0.50": 2.891,
           "relative_difference": 0.03091455560326323
         }
+      },
+      "low_grid_r20": {
+        "a_model": "HistGradientBoosting",
+        "a_threshold": 0.01,
+        "a_validation_cost": 0.7745,
+        "a_test_cost": 0.7763333333333333,
+        "a_below_0.01": false,
+        "b_model": "RandomForest",
+        "b_threshold": 0.07,
+        "b_validation_cost": 0.756,
+        "b_test_cost": 0.7523333333333333,
+        "b_below_0.01": false
       }
     },
     {
@@ -1699,6 +2010,18 @@
           "cost_at_0.50": 2.7693333333333334,
           "relative_difference": 0.01932159725203952
         }
+      },
+      "low_grid_r20": {
+        "a_model": "XGBoost",
+        "a_threshold": 0.008,
+        "a_validation_cost": 0.7776666666666666,
+        "a_test_cost": 0.7778333333333334,
+        "a_below_0.01": true,
+        "b_model": "RandomForest",
+        "b_threshold": 0.06,
+        "b_validation_cost": 0.7666666666666667,
+        "b_test_cost": 0.7613333333333333,
+        "b_below_0.01": false
       }
     },
     {
@@ -1746,6 +2069,18 @@
           "cost_at_0.50": 2.8408333333333333,
           "relative_difference": 0.0
         }
+      },
+      "low_grid_r20": {
+        "a_model": "RandomForest",
+        "a_threshold": 0.08,
+        "a_validation_cost": 0.7336666666666667,
+        "a_test_cost": 0.7965,
+        "a_below_0.01": false,
+        "b_model": "RandomForest",
+        "b_threshold": 0.08,
+        "b_validation_cost": 0.7336666666666667,
+        "b_test_cost": 0.7965,
+        "b_below_0.01": false
       }
     },
     {
@@ -1793,6 +2128,18 @@
           "cost_at_0.50": 2.7908333333333335,
           "relative_difference": 0.04111018363939892
         }
+      },
+      "low_grid_r20": {
+        "a_model": "HistGradientBoosting",
+        "a_threshold": 0.005,
+        "a_validation_cost": 0.7755,
+        "a_test_cost": 0.784,
+        "a_below_0.01": true,
+        "b_model": "RandomForest",
+        "b_threshold": 0.07,
+        "b_validation_cost": 0.7616666666666667,
+        "b_test_cost": 0.7658333333333334,
+        "b_below_0.01": false
       }
     },
     {
@@ -1840,6 +2187,18 @@
           "cost_at_0.50": 2.943,
           "relative_difference": 0.0
         }
+      },
+      "low_grid_r20": {
+        "a_model": "RandomForest",
+        "a_threshold": 0.05,
+        "a_validation_cost": 0.7746666666666666,
+        "a_test_cost": 0.7708333333333334,
+        "a_below_0.01": false,
+        "b_model": "HistGradientBoosting",
+        "b_threshold": 0.009,
+        "b_validation_cost": 0.7731666666666667,
+        "b_test_cost": 0.7766666666666666,
+        "b_below_0.01": true
       }
     },
     {
@@ -1887,8 +2246,20 @@
           "cost_at_0.50": 2.766166666666667,
           "relative_difference": 0.021030042918454908
         }
+      },
+      "low_grid_r20": {
+        "a_model": "HistGradientBoosting",
+        "a_threshold": 0.005,
+        "a_validation_cost": 0.7765,
+        "a_test_cost": 0.7796666666666666,
+        "a_below_0.01": true,
+        "b_model": "RandomForest",
+        "b_threshold": 0.06,
+        "b_validation_cost": 0.7753333333333333,
+        "b_test_cost": 0.7603333333333333,
+        "b_below_0.01": false
       }
     }
   ],
-  "elapsed_seconds": 89.18997949499999
+  "elapsed_seconds": 88.93580734100033
 }

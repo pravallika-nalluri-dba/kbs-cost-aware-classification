@@ -53,6 +53,7 @@ SPLIT_SEEDS = tuple(range(42, 62))
 RATIOS = (2, 5, 10, 20)
 N_BOOT = 1000
 THRESHOLDS = np.array([i / 100 for i in range(1, 100)], dtype=np.float64)
+LOW_THRESHOLDS = np.array([i / 1000 for i in range(1, 10)], dtype=np.float64)
 
 DISPLAY = {
     "LogisticRegression": "logistic regression",
@@ -210,14 +211,42 @@ def positive_proba(model, features: np.ndarray) -> np.ndarray:
     return proba[:, 1].astype(np.float64)
 
 
-def counts_at_thresholds(y: np.ndarray, proba: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+def counts_on_grid(y: np.ndarray, proba: np.ndarray, thresholds: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     labels = np.asarray(y).astype(np.int8)
-    predicted = proba[:, None] >= THRESHOLDS[None, :]
+    predicted = proba[:, None] >= thresholds[None, :]
     positive = labels[:, None] == 1
     true_positive = np.count_nonzero(predicted & positive, axis=0).astype(np.int64)
     false_positive = np.count_nonzero(predicted & ~positive, axis=0).astype(np.int64)
     false_negative = np.count_nonzero(~predicted & positive, axis=0).astype(np.int64)
     return true_positive, false_positive, false_negative
+
+
+def counts_at_thresholds(y: np.ndarray, proba: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    return counts_on_grid(y, proba, THRESHOLDS)
+
+
+def brier_score(y: np.ndarray, proba: np.ndarray) -> float:
+    labels = np.asarray(y, dtype=np.float64)
+    return float(np.mean((proba - labels) ** 2))
+
+
+def mean_bootstrap_interval(values: list[float]) -> dict:
+    """Percentile interval for the mean of the 20 split-level differences. Not a test-set bootstrap."""
+    array = np.asarray(values, dtype=np.float64)
+    rng = np.random.default_rng(SEED)
+    draws = rng.integers(0, array.size, size=(N_BOOT, array.size))
+    means = array[draws].mean(axis=1)
+    low, high = np.quantile(means, [0.025, 0.975], method="linear")
+    return {
+        "n_splits": int(array.size),
+        "mean": float(array.mean()),
+        "ci_low": float(low),
+        "ci_high": float(high),
+        "includes_zero": bool(low <= 0.0 <= high),
+        "n_resamples": N_BOOT,
+        "seed": SEED,
+        "method": "percentile bootstrap of the mean over split seeds",
+    }
 
 
 def f1_scores(true_positive: np.ndarray, false_positive: np.ndarray, false_negative: np.ndarray) -> np.ndarray:
@@ -483,6 +512,34 @@ def analyze_split(frame_x: pd.DataFrame, frame_y: pd.Series, seed: int) -> dict:
             "f1": f1_scores(true_positive, false_positive, false_negative),
         }
 
+    low_cache = {}
+    for name in MODEL_ORDER:
+        true_positive, false_positive, false_negative = counts_on_grid(y_val_np, val_proba[name], LOW_THRESHOLDS)
+        low_cache[name] = {
+            "fp": false_positive,
+            "fn": false_negative,
+            "f1": f1_scores(true_positive, false_positive, false_negative),
+        }
+    validation_brier = {name: brier_score(y_val_np, val_proba[name]) for name in MODEL_ORDER}
+
+    def best_on_low(ratio: int, names: list[str]) -> tuple[tuple, dict]:
+        best_key = None
+        best = None
+        for name in names:
+            cache = low_cache[name]
+            numer = cache["fp"] + ratio * cache["fn"]
+            for index, threshold in enumerate(LOW_THRESHOLDS):
+                key = (int(numer[index]), -float(cache["f1"][index]), name, float(threshold))
+                if best_key is None or key < best_key:
+                    best_key = key
+                    best = {
+                        "model": name,
+                        "threshold": float(threshold),
+                        "validation_numerator": int(numer[index]),
+                        "validation_f1": float(cache["f1"][index]),
+                    }
+        return best_key, best
+
     def model_for_ratio(ratio: int) -> str:
         if not tie_break_used:
             return tied[0]
@@ -538,6 +595,55 @@ def analyze_split(frame_x: pd.DataFrame, frame_y: pd.Series, seed: int) -> dict:
             "strategy_a": pack(model_a, index_a),
             "strategy_b": pack(model_b, index_b),
         }
+
+    # Sensitivity for r=20 only: the primary grid stops at 0.01. Selection still uses validation alone.
+    rule_a20 = by_ratio["20"]["strategy_a"]
+    rule_b20 = by_ratio["20"]["strategy_b"]
+    primary_a_key = (
+        int(rule_a20["validation_fp"] + 20 * rule_a20["validation_fn"]),
+        -float(rule_a20["validation_f1"]),
+        float(rule_a20["threshold"]),
+    )
+    primary_b_key = (
+        int(rule_b20["validation_fp"] + 20 * rule_b20["validation_fn"]),
+        -float(rule_b20["validation_f1"]),
+        rule_b20["model"],
+        float(rule_b20["threshold"]),
+    )
+    low_a_key, low_a = best_on_low(20, [rule_a20["model"]])
+    low_b_key, low_b = best_on_low(20, list(MODEL_ORDER))
+    low_a_simple = (low_a_key[0], low_a_key[1], low_a_key[3])
+    if low_a_simple < primary_a_key:
+        extended_a = low_a
+    else:
+        extended_a = {
+            "model": rule_a20["model"],
+            "threshold": float(rule_a20["threshold"]),
+            "validation_numerator": primary_a_key[0],
+            "validation_f1": float(rule_a20["validation_f1"]),
+        }
+    if low_b_key < primary_b_key:
+        extended_b = low_b
+    else:
+        extended_b = {
+            "model": rule_b20["model"],
+            "threshold": float(rule_b20["threshold"]),
+            "validation_numerator": primary_b_key[0],
+            "validation_f1": float(rule_b20["validation_f1"]),
+        }
+    chosen_models.add(extended_a["model"])
+    chosen_models.add(extended_b["model"])
+    low_grid_r20 = {
+        "grid": "0.001 to 0.009 in steps of 0.001, compared with the primary 0.01 grid",
+        "a_model": extended_a["model"],
+        "a_threshold": extended_a["threshold"],
+        "a_validation_cost": extended_a["validation_numerator"] / len(y_val_np),
+        "a_below_0.01": bool(extended_a["threshold"] < 0.01 - 1e-12),
+        "b_model": extended_b["model"],
+        "b_threshold": extended_b["threshold"],
+        "b_validation_cost": extended_b["validation_numerator"] / len(y_val_np),
+        "b_below_0.01": bool(extended_b["threshold"] < 0.01 - 1e-12),
+    }
 
     # Test probabilities are computed only after every selection is locked.
     test_proba = {}
@@ -601,6 +707,13 @@ def analyze_split(frame_x: pd.DataFrame, frame_y: pd.Series, seed: int) -> dict:
                 "same_resamples_as_strategy_contrast": True,
             }
 
+    pred_low_a = threshold_predictions(test_proba[low_grid_r20["a_model"]], low_grid_r20["a_threshold"])
+    pred_low_b = threshold_predictions(test_proba[low_grid_r20["b_model"]], low_grid_r20["b_threshold"])
+    low_grid_r20["a_test_cost"] = point_cost(y_test_np, pred_low_a, 20)
+    low_grid_r20["b_test_cost"] = point_cost(y_test_np, pred_low_b, 20)
+    low_grid_r20["a_display_name"] = DISPLAY[low_grid_r20["a_model"]]
+    low_grid_r20["b_display_name"] = DISPLAY[low_grid_r20["b_model"]]
+
     compact = {
         "seed": seed,
         "prediction_first_model": prediction_first_model,
@@ -617,6 +730,18 @@ def analyze_split(frame_x: pd.DataFrame, frame_y: pd.Series, seed: int) -> dict:
                 "relative_difference": by_ratio[str(ratio)]["relative_difference"],
             }
             for ratio in RATIOS
+        },
+        "low_grid_r20": {
+            "a_model": low_grid_r20["a_model"],
+            "a_threshold": low_grid_r20["a_threshold"],
+            "a_validation_cost": low_grid_r20["a_validation_cost"],
+            "a_test_cost": low_grid_r20["a_test_cost"],
+            "a_below_0.01": low_grid_r20["a_below_0.01"],
+            "b_model": low_grid_r20["b_model"],
+            "b_threshold": low_grid_r20["b_threshold"],
+            "b_validation_cost": low_grid_r20["b_validation_cost"],
+            "b_test_cost": low_grid_r20["b_test_cost"],
+            "b_below_0.01": low_grid_r20["b_below_0.01"],
         },
     }
     if seed != SEED:
@@ -668,6 +793,9 @@ def analyze_split(frame_x: pd.DataFrame, frame_y: pd.Series, seed: int) -> dict:
             "n_jobs": 1,
         },
         "threshold_grid": {"min": 0.01, "max": 0.99, "step": 0.01, "n": int(THRESHOLDS.size)},
+        "reference_threshold": {str(ratio): 1.0 / (1.0 + ratio) for ratio in RATIOS},
+        "validation_brier": validation_brier,
+        "low_grid_r20": low_grid_r20,
         "validation_f1_at_0.50": f1_at_half,
         "prediction_first": {
             "tied_models": tied,
@@ -741,6 +869,8 @@ def run_experiment() -> dict:
 
         tuned_lower = sum(row["cost_at_0.50"] > row["a_test_cost"] for row in rows)
         decision_lower = sum(row["b_test_cost"] < row["a_test_cost"] for row in rows)
+        prediction_lower = sum(row["a_test_cost"] < row["b_test_cost"] for row in rows)
+        ties = sum(abs(row["a_test_cost"] - row["b_test_cost"]) <= 1e-12 for row in rows)
         summary[str(ratio)] = {
             "threshold_a": pack("a_threshold", "a_threshold"),
             "threshold_b": pack("b_threshold", "b_threshold"),
@@ -749,6 +879,14 @@ def run_experiment() -> dict:
             "test_cost_at_0.50": pack("cost_at_0.50", "cost_at_0.50"),
             "n_seeds_tuned_cost_below_0.50": int(tuned_lower),
             "n_seeds_decision_first_lower_cost": int(decision_lower),
+            "n_seeds_prediction_first_lower_cost": int(prediction_lower),
+            "n_seeds_strategy_tie": int(ties),
+            "across_split_threshold_gain": mean_bootstrap_interval(
+                [row["cost_at_0.50"] - row["a_test_cost"] for row in rows]
+            ),
+            "across_split_strategy_gap": mean_bootstrap_interval(
+                [row["a_test_cost"] - row["b_test_cost"] for row in rows]
+            ),
             "prediction_first_models": sorted({item["prediction_first_model"] for item in compacts}),
         }
     model_counts = {}
@@ -763,7 +901,16 @@ def run_experiment() -> dict:
         "seeds": list(SPLIT_SEEDS),
         "prediction_first_model_counts": model_counts,
         "by_ratio": summary,
-        "note": "Min, median, and max are over split seeds. They are not a confidence interval. The bootstrap interval is only for seed 42.",
+        "note": (
+            "Min, median, and max are over split seeds. They are not a confidence interval. "
+            "The seed-42 bootstrap interval resamples the test accounts and does not refit. "
+            "The across-split interval is a separate percentile bootstrap of the mean of the 20 split-level differences."
+        ),
+        "low_grid_r20": {
+            "n_splits_prediction_first_below_0.01": int(sum(item["low_grid_r20"]["a_below_0.01"] for item in compacts)),
+            "n_splits_decision_first_below_0.01": int(sum(item["low_grid_r20"]["b_below_0.01"] for item in compacts)),
+            "seed42": next(item["low_grid_r20"] for item in compacts if item["seed"] == SEED),
+        },
     }
     primary["repeats"] = compacts
     primary["elapsed_seconds"] = time.perf_counter() - started
@@ -1026,6 +1173,95 @@ def check_manuscript(results: dict) -> None:
     )
     n_edge = sum(1 for item in results["repeats"] if abs(item["by_ratio"]["20"]["a_threshold"] - 0.01) < 1e-9)
     require(f"{n_edge} of the {n_seeds} splits" in tex, errors, "Grid-edge count for r=20 does not match.")
+
+    brier = results["validation_brier"]
+    brier_phrase = (
+        f"{fmt4(brier['LogisticRegression'])} for logistic regression, "
+        f"{fmt4(brier['RandomForest'])} for the random forest, "
+        f"{fmt4(brier['HistGradientBoosting'])} for histogram gradient boosting, and "
+        f"{fmt4(brier['XGBoost'])} for XGBoost"
+    )
+    require(brier_phrase in tex, errors, f"Validation Brier scores do not match: {brier_phrase}")
+    require(
+        "not a formal calibration proof" in tex,
+        errors,
+        "Manuscript does not say the Brier scores are not a formal calibration proof.",
+    )
+    require(
+        "does not establish algorithmic fairness" in tex,
+        errors,
+        "Manuscript does not state that excluding SEX does not establish fairness.",
+    )
+    ref_vals = [fmt2(results["reference_threshold"][str(ratio)]) for ratio in RATIOS]
+    ref_phrase = f"{ref_vals[0]}, {ref_vals[1]}, {ref_vals[2]}, and {ref_vals[3]}"
+    require(ref_phrase in tex, errors, f"Reference thresholds do not match: {ref_phrase}")
+
+    low = results["low_grid_r20"]
+    require(f"{float(low['a_threshold']):.3f}" in tex, errors, "Extended-grid threshold for r=20 is missing.")
+    require(fmt4(low["a_validation_cost"]) in tex, errors, "Extended-grid validation cost is missing.")
+    require(fmt4(low["a_test_cost"]) in tex, errors, "Extended-grid test cost is missing.")
+    low_summary = summary["low_grid_r20"]
+    require(
+        f"below 0.01 on {low_summary['n_splits_prediction_first_below_0.01']} of the {n_seeds} splits" in tex,
+        errors,
+        "Prediction-first extended-grid count does not match.",
+    )
+    require(
+        f"below 0.01 on {low_summary['n_splits_decision_first_below_0.01']} of the {n_seeds} splits" in tex,
+        errors,
+        "Decision-first extended-grid count does not match.",
+    )
+
+    def signed(value: float) -> str:
+        text = fmt4(value)
+        return f"\\({text}\\)" if text.startswith("-") else text
+
+    gains = []
+    gain_intervals = []
+    gap_tokens = []
+    gap_intervals = []
+    a_lower = []
+    tie_counts = []
+    for ratio in RATIOS:
+        band = summary["by_ratio"][str(ratio)]
+        gain = band["across_split_threshold_gain"]
+        gap = band["across_split_strategy_gap"]
+        gains.append(fmt4(gain["mean"]))
+        gain_intervals.append(f"[{fmt4(gain['ci_low'])}, {fmt4(gain['ci_high'])}]")
+        gap_tokens.append(signed(gap["mean"]))
+        gap_intervals.append(f"[{signed(gap['ci_low'])}, {signed(gap['ci_high'])}]")
+        a_lower.append(str(band["n_seeds_prediction_first_lower_cost"]))
+        tie_counts.append(str(band["n_seeds_strategy_tie"]))
+    require(
+        "The mean gain from leaving threshold 0.50 was "
+        + f"{gains[0]}, {gains[1]}, {gains[2]}, and {gains[3]}" in tex,
+        errors,
+        "Across-split mean threshold gains do not match.",
+    )
+    require(
+        f"{gain_intervals[0]}, {gain_intervals[1]}, {gain_intervals[2]}, and {gain_intervals[3]}" in tex,
+        errors,
+        "Across-split threshold-gain intervals do not match.",
+    )
+    require(
+        f"{gap_tokens[0]}, {gap_tokens[1]}, {gap_tokens[2]}, and {gap_tokens[3]}" in tex,
+        errors,
+        "Across-split mean strategy gaps do not match.",
+    )
+    require(
+        f"{gap_intervals[0]}, {gap_intervals[1]}, {gap_intervals[2]}, and {gap_intervals[3]}" in tex,
+        errors,
+        "Across-split strategy-gap intervals do not match.",
+    )
+    require(
+        (
+            f"strictly lower on {a_lower[0]}, {a_lower[1]}, {a_lower[2]}, and {a_lower[3]} "
+            f"of the {n_seeds} splits, with {tie_counts[0]}, {tie_counts[1]}, {tie_counts[2]}, and {tie_counts[3]} ties"
+        )
+        in tex,
+        errors,
+        "Prediction-first win and tie counts do not match.",
+    )
 
     if errors:
         print("Manuscript check failed:", flush=True)

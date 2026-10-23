@@ -1,5 +1,5 @@
-- Explicit cost ratios turn default probabilities into thresholds.
-- Prediction-first fixes the F1 model, then tunes its threshold.
-- Decision-first has a conclusively lower test cost only at ratio 2.
-- Strategy gaps at ratios 5, 10, and 20 are not statistically conclusive.
-- On all 20 splits, tuning beat threshold 0.50 at ratios 5, 10, and 20.
+- Most of the cost saving comes from the threshold, not the model.
+- The cost ratio is explicit knowledge: the inspectable pair (r, t).
+- Leaving 0.50 cuts cost at ratios 5, 10, and 20 on every split.
+- Seed-42 strategy gap excludes zero only at cost ratio 2.
+- At ratio 20, 0.009 does not lower the seed-42 test cost.
