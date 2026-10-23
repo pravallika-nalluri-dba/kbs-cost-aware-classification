@@ -16,8 +16,8 @@
 
 \title{A Knowledge-Based AI Framework for Data-Driven Cost-Aware Classification: Decision Support for Digital Transformation in Entrepreneurial Credit Innovation}
 \author{%
-Pravallika Nalluri\\[0.4em]
-\normalsize Independent Researcher, USA\\[0.25em]
+Pravallika Nalluri\textsuperscript{a}\\[0.4em]
+\normalsize \textsuperscript{a}Independent Researcher, USA\\[0.25em]
 \normalsize Corresponding author. Email: pravallikanalluri9848@gmail.com%
 }
 \date{}
@@ -28,7 +28,7 @@ Pravallika Nalluri\\[0.4em]
 Credit decisions need an explicit cost for a missed default, not only a probability. This study states a normalized decision cost and compares two knowledge-based rules that turn probabilities into a yes-or-no action. Both rules are locked on a validation split before the test evaluation. On the UCI credit-card default file (30,000 accounts; 6,636 defaults, 22.12\%), four probability models were fit without class weights. On the primary split (seed 42), prediction-first selection kept histogram gradient boosting, the model with the highest validation F1 at threshold 0.50 (0.4682), and then chose a cost-minimizing threshold. Decision-first selection searched every model and threshold for the lowest validation cost. Decision-first selection had the lower test cost at a false-negative cost ratio of 2 (relative difference 0.0406; paired bootstrap 95\% interval for the cost difference, 0.0050 to 0.0210). At ratios 5, 10, and 20 that interval included zero, so the strategy difference is not statistically conclusive. Leaving threshold 0.50 reduced test cost at ratios 5, 10, and 20, and those intervals excluded zero; at ratio 2 the threshold contrast was not statistically conclusive. On 20 stratified splits (seeds 42 through 61), tuned test cost was lower than the cost at 0.50 on 19 of 20 splits at ratio 2 and on all 20 splits at ratios 5, 10, and 20. Ranges across splits are not confidence intervals. The public file is not a startup portfolio.
 \end{abstract}
 
-{\sloppy\noindent\textbf{Keywords:} Cost-sensitive classification; Decision threshold; Knowledge-based system; Credit scoring; Digital transformation\par}
+{\sloppy\noindent\textbf{Keywords:} Cost-sensitive classification; Decision support; Decision threshold; Knowledge-based system; Credit scoring; Digital transformation\par}
 
 \section{Introduction}
 Knowledge-based systems support a human decision, not only a ranked score. In credit, a probability of default is not itself an action. When a missed default and a false alarm have different costs, the operating threshold is part of the decision \cite{elkan2001,provost2001}. Model comparison is already a large literature \cite{lessmann2015}. This short communication does not add another accuracy contest. It states a cost ratio as the knowledge a lender writes down, and it turns that ratio into a threshold another person can inspect \cite{vial2019}.
@@ -213,7 +213,7 @@ Expert Systems with Applications 36 (2), 2473--2480.
 
 \bibitem{yehdata}
 I-Cheng Yeh, 2009.
-Default of Credit Card Clients.
+Default of Credit Card Clients [dataset].
 UCI Machine Learning Repository.
 \url{https://doi.org/10.24432/C55S3H}
 
