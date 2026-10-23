@@ -46,7 +46,31 @@
     "train_default_rate": 0.2212222222222222,
     "validation_default_rate": 0.22116666666666668,
     "test_default_rate": 0.22116666666666668,
-    "procedure": "Hold out 6000 test rows, then hold out 6000 validation rows from the remainder."
+    "procedure": "Hold out 6000 test rows, then hold out 6000 validation rows from the remainder.",
+    "n_repeated_splits": 20,
+    "repeated_seeds": [
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61
+    ],
+    "model_random_state": 42
   },
   "hyperparameters": {
     "class_weight": null,
@@ -126,6 +150,107 @@
         "validation_f1": 0.5343043311613647,
         "validation_fp": 585,
         "validation_fn": 630,
+        "validation_cost_curve": [
+          0.7668333333333334,
+          0.7486666666666667,
+          0.7163333333333334,
+          0.6815,
+          0.6521666666666667,
+          0.6195,
+          0.5858333333333333,
+          0.5563333333333333,
+          0.5251666666666667,
+          0.4985,
+          0.4751666666666667,
+          0.45,
+          0.42983333333333335,
+          0.41483333333333333,
+          0.3978333333333333,
+          0.3795,
+          0.3675,
+          0.35783333333333334,
+          0.349,
+          0.34,
+          0.337,
+          0.3325,
+          0.3275,
+          0.32516666666666666,
+          0.32083333333333336,
+          0.31916666666666665,
+          0.31566666666666665,
+          0.31533333333333335,
+          0.31,
+          0.3095,
+          0.3075,
+          0.30816666666666664,
+          0.30833333333333335,
+          0.3085,
+          0.30966666666666665,
+          0.31116666666666665,
+          0.31183333333333335,
+          0.31166666666666665,
+          0.31216666666666665,
+          0.31383333333333335,
+          0.31533333333333335,
+          0.316,
+          0.3165,
+          0.31883333333333336,
+          0.31966666666666665,
+          0.322,
+          0.32133333333333336,
+          0.32183333333333336,
+          0.323,
+          0.3233333333333333,
+          0.3238333333333333,
+          0.3273333333333333,
+          0.3283333333333333,
+          0.3293333333333333,
+          0.3293333333333333,
+          0.3325,
+          0.334,
+          0.3375,
+          0.3416666666666667,
+          0.3433333333333333,
+          0.3455,
+          0.3466666666666667,
+          0.3501666666666667,
+          0.35233333333333333,
+          0.3526666666666667,
+          0.3545,
+          0.3575,
+          0.35983333333333334,
+          0.365,
+          0.3665,
+          0.37183333333333335,
+          0.37616666666666665,
+          0.382,
+          0.38466666666666666,
+          0.38816666666666666,
+          0.39266666666666666,
+          0.3975,
+          0.4021666666666667,
+          0.4083333333333333,
+          0.41233333333333333,
+          0.4171666666666667,
+          0.421,
+          0.4241666666666667,
+          0.42783333333333334,
+          0.4295,
+          0.43116666666666664,
+          0.43233333333333335,
+          0.4345,
+          0.43766666666666665,
+          0.43766666666666665,
+          0.43833333333333335,
+          0.43916666666666665,
+          0.44066666666666665,
+          0.44083333333333335,
+          0.44216666666666665,
+          0.442,
+          0.442,
+          0.44233333333333336,
+          0.44233333333333336
+        ],
         "test_cost": 0.31633333333333336
       },
       "strategy_b": {
@@ -140,17 +265,6 @@
       },
       "cost_difference": 0.012833333333333363,
       "relative_difference": 0.04056902002107491,
-      "bootstrap": {
-        "n_resamples": 1000,
-        "seed": 42,
-        "method": "paired percentile",
-        "interval": "2.5 to 97.5",
-        "contrast": "test cost A minus test cost B",
-        "ci_low": 0.004995833333333338,
-        "ci_high": 0.02100416666666668,
-        "includes_zero": false,
-        "retrained": false
-      },
       "threshold_effect": {
         "model": "HistGradientBoosting",
         "display_name": "histogram GB",
@@ -165,6 +279,17 @@
           "includes_zero": true,
           "same_resamples_as_strategy_contrast": true
         }
+      },
+      "bootstrap": {
+        "n_resamples": 1000,
+        "seed": 42,
+        "method": "paired percentile",
+        "interval": "2.5 to 97.5",
+        "contrast": "test cost A minus test cost B",
+        "ci_low": 0.004995833333333338,
+        "ci_high": 0.02100416666666668,
+        "includes_zero": false,
+        "retrained": false
       }
     },
     "5": {
@@ -176,6 +301,107 @@
         "validation_f1": 0.5049782997191729,
         "validation_fp": 1601,
         "validation_fn": 338,
+        "validation_cost_curve": [
+          0.7678333333333334,
+          0.7601666666666667,
+          0.7358333333333333,
+          0.7085,
+          0.6876666666666666,
+          0.6635,
+          0.6358333333333334,
+          0.6128333333333333,
+          0.5931666666666666,
+          0.581,
+          0.5706666666666667,
+          0.5595,
+          0.5573333333333333,
+          0.5583333333333333,
+          0.5563333333333333,
+          0.5485,
+          0.552,
+          0.5543333333333333,
+          0.56,
+          0.561,
+          0.5725,
+          0.578,
+          0.5815,
+          0.5876666666666667,
+          0.5938333333333333,
+          0.6021666666666666,
+          0.6031666666666666,
+          0.6098333333333333,
+          0.61,
+          0.616,
+          0.6225,
+          0.6331666666666667,
+          0.6418333333333334,
+          0.6485,
+          0.6561666666666667,
+          0.6656666666666666,
+          0.6733333333333333,
+          0.6776666666666666,
+          0.6826666666666666,
+          0.6898333333333333,
+          0.6983333333333334,
+          0.704,
+          0.7085,
+          0.7168333333333333,
+          0.7216666666666667,
+          0.7305,
+          0.7328333333333333,
+          0.7358333333333333,
+          0.743,
+          0.7458333333333333,
+          0.7498333333333334,
+          0.7603333333333333,
+          0.7648333333333334,
+          0.7698333333333334,
+          0.7728333333333334,
+          0.782,
+          0.7865,
+          0.7985,
+          0.8106666666666666,
+          0.8173333333333334,
+          0.8245,
+          0.8296666666666667,
+          0.8396666666666667,
+          0.8463333333333334,
+          0.8496666666666667,
+          0.856,
+          0.865,
+          0.8728333333333333,
+          0.8885,
+          0.8945,
+          0.9083333333333333,
+          0.9206666666666666,
+          0.936,
+          0.9441666666666667,
+          0.9546666666666667,
+          0.9671666666666666,
+          0.982,
+          0.9951666666666666,
+          1.0113333333333334,
+          1.0228333333333333,
+          1.0351666666666666,
+          1.046,
+          1.0556666666666668,
+          1.0658333333333334,
+          1.0705,
+          1.0751666666666666,
+          1.0783333333333334,
+          1.084,
+          1.0921666666666667,
+          1.0926666666666667,
+          1.0948333333333333,
+          1.0971666666666666,
+          1.1011666666666666,
+          1.1018333333333334,
+          1.1051666666666666,
+          1.105,
+          1.105,
+          1.1058333333333332,
+          1.1058333333333332
+        ],
         "test_cost": 0.5761666666666667
       },
       "strategy_b": {
@@ -190,17 +416,6 @@
       },
       "cost_difference": -0.002666666666666595,
       "relative_difference": -0.004628290425224058,
-      "bootstrap": {
-        "n_resamples": 1000,
-        "seed": 42,
-        "method": "paired percentile",
-        "interval": "2.5 to 97.5",
-        "contrast": "test cost A minus test cost B",
-        "ci_low": -0.020170833333333336,
-        "ci_high": 0.014666666666666606,
-        "includes_zero": true,
-        "retrained": false
-      },
       "threshold_effect": {
         "model": "HistGradientBoosting",
         "display_name": "histogram GB",
@@ -215,6 +430,17 @@
           "includes_zero": false,
           "same_resamples_as_strategy_contrast": true
         }
+      },
+      "bootstrap": {
+        "n_resamples": 1000,
+        "seed": 42,
+        "method": "paired percentile",
+        "interval": "2.5 to 97.5",
+        "contrast": "test cost A minus test cost B",
+        "ci_low": -0.020170833333333336,
+        "ci_high": 0.014666666666666606,
+        "includes_zero": true,
+        "retrained": false
       }
     },
     "10": {
@@ -226,6 +452,107 @@
         "validation_f1": 0.44135630906058926,
         "validation_fp": 2879,
         "validation_fn": 136,
+        "validation_cost_curve": [
+          0.7695,
+          0.7793333333333333,
+          0.7683333333333333,
+          0.7535,
+          0.7468333333333333,
+          0.7368333333333333,
+          0.7191666666666666,
+          0.707,
+          0.7065,
+          0.7185,
+          0.7298333333333333,
+          0.742,
+          0.7698333333333334,
+          0.7975,
+          0.8205,
+          0.8301666666666667,
+          0.8595,
+          0.8818333333333334,
+          0.9116666666666666,
+          0.9293333333333333,
+          0.965,
+          0.9871666666666666,
+          1.0048333333333332,
+          1.0251666666666666,
+          1.0488333333333333,
+          1.0738333333333334,
+          1.0823333333333334,
+          1.1006666666666667,
+          1.11,
+          1.1268333333333334,
+          1.1475,
+          1.1748333333333334,
+          1.1976666666666667,
+          1.2151666666666667,
+          1.2336666666666667,
+          1.2565,
+          1.2758333333333334,
+          1.2876666666666667,
+          1.3001666666666667,
+          1.3165,
+          1.3366666666666667,
+          1.3506666666666667,
+          1.3618333333333332,
+          1.3801666666666668,
+          1.3916666666666666,
+          1.4113333333333333,
+          1.4186666666666667,
+          1.4258333333333333,
+          1.443,
+          1.45,
+          1.4598333333333333,
+          1.482,
+          1.4923333333333333,
+          1.504,
+          1.512,
+          1.5311666666666666,
+          1.5406666666666666,
+          1.5668333333333333,
+          1.5923333333333334,
+          1.6073333333333333,
+          1.6228333333333333,
+          1.6346666666666667,
+          1.6555,
+          1.6696666666666666,
+          1.678,
+          1.6918333333333333,
+          1.7108333333333334,
+          1.7278333333333333,
+          1.761,
+          1.7745,
+          1.8025,
+          1.8281666666666667,
+          1.8593333333333333,
+          1.8766666666666667,
+          1.8988333333333334,
+          1.9246666666666667,
+          1.9561666666666666,
+          1.9835,
+          2.0163333333333333,
+          2.0403333333333333,
+          2.065166666666667,
+          2.087666666666667,
+          2.1081666666666665,
+          2.129166666666667,
+          2.1388333333333334,
+          2.1485,
+          2.155,
+          2.1665,
+          2.183,
+          2.1843333333333335,
+          2.189,
+          2.1938333333333335,
+          2.202,
+          2.2035,
+          2.210166666666667,
+          2.21,
+          2.21,
+          2.2116666666666664,
+          2.2116666666666664
+        ],
         "test_cost": 0.7391666666666666
       },
       "strategy_b": {
@@ -240,17 +567,6 @@
       },
       "cost_difference": 0.02966666666666662,
       "relative_difference": 0.04013528748590749,
-      "bootstrap": {
-        "n_resamples": 1000,
-        "seed": 42,
-        "method": "paired percentile",
-        "interval": "2.5 to 97.5",
-        "contrast": "test cost A minus test cost B",
-        "ci_low": -0.002333333333333301,
-        "ci_high": 0.06550416666666667,
-        "includes_zero": true,
-        "retrained": false
-      },
       "threshold_effect": {
         "model": "HistGradientBoosting",
         "display_name": "histogram GB",
@@ -265,6 +581,17 @@
           "includes_zero": false,
           "same_resamples_as_strategy_contrast": true
         }
+      },
+      "bootstrap": {
+        "n_resamples": 1000,
+        "seed": 42,
+        "method": "paired percentile",
+        "interval": "2.5 to 97.5",
+        "contrast": "test cost A minus test cost B",
+        "ci_low": -0.002333333333333301,
+        "ci_high": 0.06550416666666667,
+        "includes_zero": true,
+        "retrained": false
       }
     },
     "20": {
@@ -276,6 +603,107 @@
         "validation_f1": 0.3655676645054491,
         "validation_fp": 4597,
         "validation_fn": 2,
+        "validation_cost_curve": [
+          0.7728333333333334,
+          0.8176666666666667,
+          0.8333333333333334,
+          0.8435,
+          0.8651666666666666,
+          0.8835,
+          0.8858333333333334,
+          0.8953333333333333,
+          0.9331666666666667,
+          0.9935,
+          1.0481666666666667,
+          1.107,
+          1.1948333333333334,
+          1.2758333333333334,
+          1.3488333333333333,
+          1.3935,
+          1.4745,
+          1.5368333333333333,
+          1.615,
+          1.666,
+          1.75,
+          1.8055,
+          1.8515,
+          1.9001666666666666,
+          1.9588333333333334,
+          2.0171666666666668,
+          2.0406666666666666,
+          2.082333333333333,
+          2.11,
+          2.1485,
+          2.1975,
+          2.258166666666667,
+          2.3093333333333335,
+          2.3485,
+          2.3886666666666665,
+          2.4381666666666666,
+          2.4808333333333334,
+          2.5076666666666667,
+          2.5351666666666666,
+          2.5698333333333334,
+          2.6133333333333333,
+          2.644,
+          2.6685,
+          2.7068333333333334,
+          2.7316666666666665,
+          2.773,
+          2.7903333333333333,
+          2.805833333333333,
+          2.843,
+          2.8583333333333334,
+          2.8798333333333335,
+          2.925333333333333,
+          2.9473333333333334,
+          2.9723333333333333,
+          2.9903333333333335,
+          3.0295,
+          3.049,
+          3.1035,
+          3.155666666666667,
+          3.187333333333333,
+          3.2195,
+          3.244666666666667,
+          3.287166666666667,
+          3.316333333333333,
+          3.3346666666666667,
+          3.3635,
+          3.4025,
+          3.4378333333333333,
+          3.506,
+          3.5345,
+          3.5908333333333333,
+          3.6431666666666667,
+          3.706,
+          3.7416666666666667,
+          3.787166666666667,
+          3.8396666666666666,
+          3.9045,
+          3.960166666666667,
+          4.0263333333333335,
+          4.075333333333333,
+          4.125166666666667,
+          4.171,
+          4.213166666666667,
+          4.255833333333333,
+          4.2755,
+          4.295166666666667,
+          4.308333333333334,
+          4.3315,
+          4.3646666666666665,
+          4.367666666666667,
+          4.3773333333333335,
+          4.387166666666666,
+          4.403666666666667,
+          4.406833333333333,
+          4.420166666666667,
+          4.42,
+          4.42,
+          4.423333333333333,
+          4.423333333333333
+        ],
         "test_cost": 0.7815
       },
       "strategy_b": {
@@ -290,17 +718,6 @@
       },
       "cost_difference": 0.006000000000000005,
       "relative_difference": 0.007677543186180429,
-      "bootstrap": {
-        "n_resamples": 1000,
-        "seed": 42,
-        "method": "paired percentile",
-        "interval": "2.5 to 97.5",
-        "contrast": "test cost A minus test cost B",
-        "ci_low": -0.016837500000000033,
-        "ci_high": 0.027170833333333335,
-        "includes_zero": true,
-        "retrained": false
-      },
       "threshold_effect": {
         "model": "HistGradientBoosting",
         "display_name": "histogram GB",
@@ -315,6 +732,17 @@
           "includes_zero": false,
           "same_resamples_as_strategy_contrast": true
         }
+      },
+      "bootstrap": {
+        "n_resamples": 1000,
+        "seed": 42,
+        "method": "paired percentile",
+        "interval": "2.5 to 97.5",
+        "contrast": "test cost A minus test cost B",
+        "ci_low": -0.016837500000000033,
+        "ci_high": 0.027170833333333335,
+        "includes_zero": true,
+        "retrained": false
       }
     }
   },
@@ -324,12 +752,1143 @@
     "method": "paired percentile",
     "retrained": false
   },
-  "elapsed_seconds": 5.384961401000055,
   "library_versions": {
     "numpy": "2.5.4",
     "pandas": "3.1.0",
     "scikit-learn": "1.9.1",
     "xgboost": "3.4.1",
     "matplotlib": "3.11.2"
-  }
+  },
+  "repeat_summary": {
+    "n_seeds": 20,
+    "seeds": [
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61
+    ],
+    "prediction_first_model_counts": {
+      "HistGradientBoosting": 12,
+      "XGBoost": 6,
+      "RandomForest": 2
+    },
+    "by_ratio": {
+      "2": {
+        "threshold_a": {
+          "min": 0.3,
+          "median": 0.345,
+          "max": 0.38,
+          "seed42": 0.31
+        },
+        "threshold_b": {
+          "min": 0.27,
+          "median": 0.315,
+          "max": 0.37,
+          "seed42": 0.3
+        },
+        "test_cost_a": {
+          "min": 0.2916666666666667,
+          "median": 0.3051666666666667,
+          "max": 0.3175,
+          "seed42": 0.31633333333333336
+        },
+        "test_cost_b": {
+          "min": 0.293,
+          "median": 0.3035,
+          "max": 0.31433333333333335,
+          "seed42": 0.3035
+        },
+        "test_cost_at_0.50": {
+          "min": 0.31216666666666665,
+          "median": 0.31958333333333333,
+          "max": 0.33,
+          "seed42": 0.32716666666666666
+        },
+        "n_seeds_tuned_cost_below_0.50": 19,
+        "n_seeds_decision_first_lower_cost": 13,
+        "prediction_first_models": [
+          "HistGradientBoosting",
+          "RandomForest",
+          "XGBoost"
+        ]
+      },
+      "5": {
+        "threshold_a": {
+          "min": 0.13,
+          "median": 0.16,
+          "max": 0.22,
+          "seed42": 0.16
+        },
+        "threshold_b": {
+          "min": 0.14,
+          "median": 0.17,
+          "max": 0.22,
+          "seed42": 0.16
+        },
+        "test_cost_a": {
+          "min": 0.5253333333333333,
+          "median": 0.56175,
+          "max": 0.5761666666666667,
+          "seed42": 0.5761666666666667
+        },
+        "test_cost_b": {
+          "min": 0.5435,
+          "median": 0.5580833333333333,
+          "max": 0.588,
+          "seed42": 0.5788333333333333
+        },
+        "test_cost_at_0.50": {
+          "min": 0.7211666666666666,
+          "median": 0.73725,
+          "max": 0.7655,
+          "seed42": 0.7521666666666667
+        },
+        "n_seeds_tuned_cost_below_0.50": 20,
+        "n_seeds_decision_first_lower_cost": 7,
+        "prediction_first_models": [
+          "HistGradientBoosting",
+          "RandomForest",
+          "XGBoost"
+        ]
+      },
+      "10": {
+        "threshold_a": {
+          "min": 0.05,
+          "median": 0.08,
+          "max": 0.1,
+          "seed42": 0.09
+        },
+        "threshold_b": {
+          "min": 0.06,
+          "median": 0.1,
+          "max": 0.11,
+          "seed42": 0.1
+        },
+        "test_cost_a": {
+          "min": 0.6668333333333333,
+          "median": 0.71625,
+          "max": 0.7471666666666666,
+          "seed42": 0.7391666666666666
+        },
+        "test_cost_b": {
+          "min": 0.6625,
+          "median": 0.7038333333333333,
+          "max": 0.7456666666666667,
+          "seed42": 0.7095
+        },
+        "test_cost_at_0.50": {
+          "min": 1.4001666666666666,
+          "median": 1.43425,
+          "max": 1.4913333333333334,
+          "seed42": 1.4605
+        },
+        "n_seeds_tuned_cost_below_0.50": 20,
+        "n_seeds_decision_first_lower_cost": 13,
+        "prediction_first_models": [
+          "HistGradientBoosting",
+          "RandomForest",
+          "XGBoost"
+        ]
+      },
+      "20": {
+        "threshold_a": {
+          "min": 0.01,
+          "median": 0.02,
+          "max": 0.08,
+          "seed42": 0.01
+        },
+        "threshold_b": {
+          "min": 0.02,
+          "median": 0.06,
+          "max": 0.08,
+          "seed42": 0.06
+        },
+        "test_cost_a": {
+          "min": 0.7673333333333333,
+          "median": 0.77925,
+          "max": 0.866,
+          "seed42": 0.7815
+        },
+        "test_cost_b": {
+          "min": 0.7523333333333333,
+          "median": 0.7654166666666666,
+          "max": 0.7965,
+          "seed42": 0.7755
+        },
+        "test_cost_at_0.50": {
+          "min": 2.7551666666666668,
+          "median": 2.827583333333333,
+          "max": 2.943,
+          "seed42": 2.8771666666666667
+        },
+        "n_seeds_tuned_cost_below_0.50": 20,
+        "n_seeds_decision_first_lower_cost": 17,
+        "prediction_first_models": [
+          "HistGradientBoosting",
+          "RandomForest",
+          "XGBoost"
+        ]
+      }
+    },
+    "note": "Min, median, and max are over split seeds. They are not a confidence interval. The bootstrap interval is only for seed 42."
+  },
+  "repeats": [
+    {
+      "seed": 42,
+      "prediction_first_model": "HistGradientBoosting",
+      "tie_break_used": false,
+      "by_ratio": {
+        "2": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.31,
+          "a_test_cost": 0.31633333333333336,
+          "b_model": "RandomForest",
+          "b_threshold": 0.3,
+          "b_test_cost": 0.3035,
+          "cost_at_0.50": 0.32716666666666666,
+          "relative_difference": 0.04056902002107491
+        },
+        "5": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.16,
+          "a_test_cost": 0.5761666666666667,
+          "b_model": "XGBoost",
+          "b_threshold": 0.16,
+          "b_test_cost": 0.5788333333333333,
+          "cost_at_0.50": 0.7521666666666667,
+          "relative_difference": -0.004628290425224058
+        },
+        "10": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.09,
+          "a_test_cost": 0.7391666666666666,
+          "b_model": "RandomForest",
+          "b_threshold": 0.1,
+          "b_test_cost": 0.7095,
+          "cost_at_0.50": 1.4605,
+          "relative_difference": 0.04013528748590749
+        },
+        "20": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.01,
+          "a_test_cost": 0.7815,
+          "b_model": "RandomForest",
+          "b_threshold": 0.06,
+          "b_test_cost": 0.7755,
+          "cost_at_0.50": 2.8771666666666667,
+          "relative_difference": 0.007677543186180429
+        }
+      }
+    },
+    {
+      "seed": 43,
+      "prediction_first_model": "HistGradientBoosting",
+      "tie_break_used": false,
+      "by_ratio": {
+        "2": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.36,
+          "a_test_cost": 0.3135,
+          "b_model": "RandomForest",
+          "b_threshold": 0.28,
+          "b_test_cost": 0.31433333333333335,
+          "cost_at_0.50": 0.3258333333333333,
+          "relative_difference": -0.0026581605528974562
+        },
+        "5": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.17,
+          "a_test_cost": 0.5673333333333334,
+          "b_model": "XGBoost",
+          "b_threshold": 0.15,
+          "b_test_cost": 0.588,
+          "cost_at_0.50": 0.7508333333333334,
+          "relative_difference": -0.03642773207990589
+        },
+        "10": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.07,
+          "a_test_cost": 0.7306666666666667,
+          "b_model": "XGBoost",
+          "b_threshold": 0.06,
+          "b_test_cost": 0.7131666666666666,
+          "cost_at_0.50": 1.4591666666666667,
+          "relative_difference": 0.023950729927007395
+        },
+        "20": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.02,
+          "a_test_cost": 0.773,
+          "b_model": "XGBoost",
+          "b_threshold": 0.02,
+          "b_test_cost": 0.7651666666666667,
+          "cost_at_0.50": 2.8758333333333335,
+          "relative_difference": 0.010133678309616246
+        }
+      }
+    },
+    {
+      "seed": 44,
+      "prediction_first_model": "XGBoost",
+      "tie_break_used": false,
+      "by_ratio": {
+        "2": {
+          "a_model": "XGBoost",
+          "a_threshold": 0.32,
+          "a_test_cost": 0.31383333333333335,
+          "b_model": "RandomForest",
+          "b_threshold": 0.34,
+          "b_test_cost": 0.31066666666666665,
+          "cost_at_0.50": 0.32816666666666666,
+          "relative_difference": 0.010090281465746276
+        },
+        "5": {
+          "a_model": "XGBoost",
+          "a_threshold": 0.15,
+          "a_test_cost": 0.5688333333333333,
+          "b_model": "RandomForest",
+          "b_threshold": 0.16,
+          "b_test_cost": 0.5748333333333333,
+          "cost_at_0.50": 0.7546666666666667,
+          "relative_difference": -0.01054790506885439
+        },
+        "10": {
+          "a_model": "XGBoost",
+          "a_threshold": 0.07,
+          "a_test_cost": 0.7153333333333334,
+          "b_model": "RandomForest",
+          "b_threshold": 0.11,
+          "b_test_cost": 0.703,
+          "cost_at_0.50": 1.4655,
+          "relative_difference": 0.017241379310344945
+        },
+        "20": {
+          "a_model": "XGBoost",
+          "a_threshold": 0.02,
+          "a_test_cost": 0.7743333333333333,
+          "b_model": "RandomForest",
+          "b_threshold": 0.08,
+          "b_test_cost": 0.7728333333333334,
+          "cost_at_0.50": 2.887166666666667,
+          "relative_difference": 0.0019371502367627367
+        }
+      }
+    },
+    {
+      "seed": 45,
+      "prediction_first_model": "HistGradientBoosting",
+      "tie_break_used": false,
+      "by_ratio": {
+        "2": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.35,
+          "a_test_cost": 0.30316666666666664,
+          "b_model": "RandomForest",
+          "b_threshold": 0.31,
+          "b_test_cost": 0.3015,
+          "cost_at_0.50": 0.31616666666666665,
+          "relative_difference": 0.005497526113248982
+        },
+        "5": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.16,
+          "a_test_cost": 0.5543333333333333,
+          "b_model": "RandomForest",
+          "b_threshold": 0.18,
+          "b_test_cost": 0.556,
+          "cost_at_0.50": 0.7226666666666667,
+          "relative_difference": -0.0030066145520145013
+        },
+        "10": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.07,
+          "a_test_cost": 0.7255,
+          "b_model": "RandomForest",
+          "b_threshold": 0.09,
+          "b_test_cost": 0.6733333333333333,
+          "cost_at_0.50": 1.4001666666666666,
+          "relative_difference": 0.07190443372386864
+        },
+        "20": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.01,
+          "a_test_cost": 0.7723333333333333,
+          "b_model": "RandomForest",
+          "b_threshold": 0.06,
+          "b_test_cost": 0.762,
+          "cost_at_0.50": 2.7551666666666668,
+          "relative_difference": 0.013379369874838117
+        }
+      }
+    },
+    {
+      "seed": 46,
+      "prediction_first_model": "HistGradientBoosting",
+      "tie_break_used": false,
+      "by_ratio": {
+        "2": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.37,
+          "a_test_cost": 0.30433333333333334,
+          "b_model": "RandomForest",
+          "b_threshold": 0.36,
+          "b_test_cost": 0.30283333333333334,
+          "cost_at_0.50": 0.31883333333333336,
+          "relative_difference": 0.0049288061336254145
+        },
+        "5": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.16,
+          "a_test_cost": 0.5578333333333333,
+          "b_model": "HistGradientBoosting",
+          "b_threshold": 0.16,
+          "b_test_cost": 0.5578333333333333,
+          "cost_at_0.50": 0.7313333333333333,
+          "relative_difference": 0.0
+        },
+        "10": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.08,
+          "a_test_cost": 0.7471666666666666,
+          "b_model": "RandomForest",
+          "b_threshold": 0.09,
+          "b_test_cost": 0.688,
+          "cost_at_0.50": 1.4188333333333334,
+          "relative_difference": 0.07918804372072277
+        },
+        "20": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.04,
+          "a_test_cost": 0.866,
+          "b_model": "RandomForest",
+          "b_threshold": 0.06,
+          "b_test_cost": 0.772,
+          "cost_at_0.50": 2.793833333333333,
+          "relative_difference": 0.1085450346420323
+        }
+      }
+    },
+    {
+      "seed": 47,
+      "prediction_first_model": "HistGradientBoosting",
+      "tie_break_used": false,
+      "by_ratio": {
+        "2": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.36,
+          "a_test_cost": 0.3015,
+          "b_model": "RandomForest",
+          "b_threshold": 0.32,
+          "b_test_cost": 0.2951666666666667,
+          "cost_at_0.50": 0.31833333333333336,
+          "relative_difference": 0.021006080707573142
+        },
+        "5": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.22,
+          "a_test_cost": 0.5593333333333333,
+          "b_model": "RandomForest",
+          "b_threshold": 0.2,
+          "b_test_cost": 0.5435,
+          "cost_at_0.50": 0.7348333333333333,
+          "relative_difference": 0.028307508939213407
+        },
+        "10": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.06,
+          "a_test_cost": 0.7416666666666667,
+          "b_model": "RandomForest",
+          "b_threshold": 0.1,
+          "b_test_cost": 0.7081666666666667,
+          "cost_at_0.50": 1.429,
+          "relative_difference": 0.04516853932584266
+        },
+        "20": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.03,
+          "a_test_cost": 0.7985,
+          "b_model": "RandomForest",
+          "b_threshold": 0.05,
+          "b_test_cost": 0.7648333333333334,
+          "cost_at_0.50": 2.8173333333333335,
+          "relative_difference": 0.04216238781047792
+        }
+      }
+    },
+    {
+      "seed": 48,
+      "prediction_first_model": "HistGradientBoosting",
+      "tie_break_used": false,
+      "by_ratio": {
+        "2": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.38,
+          "a_test_cost": 0.30083333333333334,
+          "b_model": "RandomForest",
+          "b_threshold": 0.3,
+          "b_test_cost": 0.2941666666666667,
+          "cost_at_0.50": 0.31483333333333335,
+          "relative_difference": 0.022160664819944557
+        },
+        "5": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.21,
+          "a_test_cost": 0.548,
+          "b_model": "RandomForest",
+          "b_threshold": 0.17,
+          "b_test_cost": 0.5495,
+          "cost_at_0.50": 0.7243333333333334,
+          "relative_difference": -0.0027372262773721636
+        },
+        "10": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.08,
+          "a_test_cost": 0.6991666666666667,
+          "b_model": "RandomForest",
+          "b_threshold": 0.09,
+          "b_test_cost": 0.7011666666666667,
+          "cost_at_0.50": 1.4068333333333334,
+          "relative_difference": -0.0028605482717520884
+        },
+        "20": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.01,
+          "a_test_cost": 0.7818333333333334,
+          "b_model": "RandomForest",
+          "b_threshold": 0.06,
+          "b_test_cost": 0.768,
+          "cost_at_0.50": 2.7718333333333334,
+          "relative_difference": 0.017693455553186993
+        }
+      }
+    },
+    {
+      "seed": 49,
+      "prediction_first_model": "XGBoost",
+      "tie_break_used": false,
+      "by_ratio": {
+        "2": {
+          "a_model": "XGBoost",
+          "a_threshold": 0.36,
+          "a_test_cost": 0.30416666666666664,
+          "b_model": "RandomForest",
+          "b_threshold": 0.36,
+          "b_test_cost": 0.30566666666666664,
+          "cost_at_0.50": 0.324,
+          "relative_difference": -0.0049315068493150736
+        },
+        "5": {
+          "a_model": "XGBoost",
+          "a_threshold": 0.13,
+          "a_test_cost": 0.548,
+          "b_model": "HistGradientBoosting",
+          "b_threshold": 0.14,
+          "b_test_cost": 0.5656666666666667,
+          "cost_at_0.50": 0.7435,
+          "relative_difference": -0.03223844282238432
+        },
+        "10": {
+          "a_model": "XGBoost",
+          "a_threshold": 0.06,
+          "a_test_cost": 0.711,
+          "b_model": "RandomForest",
+          "b_threshold": 0.09,
+          "b_test_cost": 0.687,
+          "cost_at_0.50": 1.4426666666666668,
+          "relative_difference": 0.03375527426160325
+        },
+        "20": {
+          "a_model": "XGBoost",
+          "a_threshold": 0.03,
+          "a_test_cost": 0.7863333333333333,
+          "b_model": "RandomForest",
+          "b_threshold": 0.06,
+          "b_test_cost": 0.7543333333333333,
+          "cost_at_0.50": 2.841,
+          "relative_difference": 0.04069520983467575
+        }
+      }
+    },
+    {
+      "seed": 50,
+      "prediction_first_model": "HistGradientBoosting",
+      "tie_break_used": false,
+      "by_ratio": {
+        "2": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.3,
+          "a_test_cost": 0.3175,
+          "b_model": "RandomForest",
+          "b_threshold": 0.29,
+          "b_test_cost": 0.31066666666666665,
+          "cost_at_0.50": 0.31533333333333335,
+          "relative_difference": 0.021522309711286165
+        },
+        "5": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.16,
+          "a_test_cost": 0.5726666666666667,
+          "b_model": "XGBoost",
+          "b_threshold": 0.18,
+          "b_test_cost": 0.5735,
+          "cost_at_0.50": 0.7268333333333333,
+          "relative_difference": -0.0014551804423748882
+        },
+        "10": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.05,
+          "a_test_cost": 0.7206666666666667,
+          "b_model": "RandomForest",
+          "b_threshold": 0.1,
+          "b_test_cost": 0.6943333333333334,
+          "cost_at_0.50": 1.4126666666666667,
+          "relative_difference": 0.036540240518038836
+        },
+        "20": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.02,
+          "a_test_cost": 0.7673333333333333,
+          "b_model": "RandomForest",
+          "b_threshold": 0.05,
+          "b_test_cost": 0.772,
+          "cost_at_0.50": 2.7843333333333335,
+          "relative_difference": -0.006081668114682939
+        }
+      }
+    },
+    {
+      "seed": 51,
+      "prediction_first_model": "HistGradientBoosting",
+      "tie_break_used": false,
+      "by_ratio": {
+        "2": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.31,
+          "a_test_cost": 0.3105,
+          "b_model": "XGBoost",
+          "b_threshold": 0.29,
+          "b_test_cost": 0.31416666666666665,
+          "cost_at_0.50": 0.31916666666666665,
+          "relative_difference": -0.01180891035963495
+        },
+        "5": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.15,
+          "a_test_cost": 0.5738333333333333,
+          "b_model": "RandomForest",
+          "b_threshold": 0.17,
+          "b_test_cost": 0.5583333333333333,
+          "cost_at_0.50": 0.7361666666666666,
+          "relative_difference": 0.027011327330816078
+        },
+        "10": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.08,
+          "a_test_cost": 0.733,
+          "b_model": "RandomForest",
+          "b_threshold": 0.11,
+          "b_test_cost": 0.7043333333333334,
+          "cost_at_0.50": 1.4311666666666667,
+          "relative_difference": 0.039108685766257326
+        },
+        "20": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.04,
+          "a_test_cost": 0.8075,
+          "b_model": "RandomForest",
+          "b_threshold": 0.07,
+          "b_test_cost": 0.7653333333333333,
+          "cost_at_0.50": 2.8211666666666666,
+          "relative_difference": 0.052218782249742024
+        }
+      }
+    },
+    {
+      "seed": 52,
+      "prediction_first_model": "XGBoost",
+      "tie_break_used": false,
+      "by_ratio": {
+        "2": {
+          "a_model": "XGBoost",
+          "a_threshold": 0.31,
+          "a_test_cost": 0.2916666666666667,
+          "b_model": "RandomForest",
+          "b_threshold": 0.33,
+          "b_test_cost": 0.293,
+          "cost_at_0.50": 0.31366666666666665,
+          "relative_difference": -0.004571428571428449
+        },
+        "5": {
+          "a_model": "XGBoost",
+          "a_threshold": 0.21,
+          "a_test_cost": 0.5253333333333333,
+          "b_model": "RandomForest",
+          "b_threshold": 0.22,
+          "b_test_cost": 0.5446666666666666,
+          "cost_at_0.50": 0.7216666666666667,
+          "relative_difference": -0.036802030456852756
+        },
+        "10": {
+          "a_model": "XGBoost",
+          "a_threshold": 0.08,
+          "a_test_cost": 0.6668333333333333,
+          "b_model": "RandomForest",
+          "b_threshold": 0.1,
+          "b_test_cost": 0.6625,
+          "cost_at_0.50": 1.4016666666666666,
+          "relative_difference": 0.006498375406148413
+        },
+        "20": {
+          "a_model": "XGBoost",
+          "a_threshold": 0.02,
+          "a_test_cost": 0.7733333333333333,
+          "b_model": "HistGradientBoosting",
+          "b_threshold": 0.02,
+          "b_test_cost": 0.7655,
+          "cost_at_0.50": 2.7616666666666667,
+          "relative_difference": 0.010129310344827619
+        }
+      }
+    },
+    {
+      "seed": 53,
+      "prediction_first_model": "HistGradientBoosting",
+      "tie_break_used": false,
+      "by_ratio": {
+        "2": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.35,
+          "a_test_cost": 0.30566666666666664,
+          "b_model": "RandomForest",
+          "b_threshold": 0.33,
+          "b_test_cost": 0.299,
+          "cost_at_0.50": 0.32083333333333336,
+          "relative_difference": 0.021810250817884368
+        },
+        "5": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.16,
+          "a_test_cost": 0.539,
+          "b_model": "RandomForest",
+          "b_threshold": 0.18,
+          "b_test_cost": 0.5513333333333333,
+          "cost_at_0.50": 0.7438333333333333,
+          "relative_difference": -0.02288188002473712
+        },
+        "10": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.08,
+          "a_test_cost": 0.71,
+          "b_model": "RandomForest",
+          "b_threshold": 0.1,
+          "b_test_cost": 0.6846666666666666,
+          "cost_at_0.50": 1.4488333333333334,
+          "relative_difference": 0.0356807511737089
+        },
+        "20": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.03,
+          "a_test_cost": 0.7815,
+          "b_model": "RandomForest",
+          "b_threshold": 0.08,
+          "b_test_cost": 0.7606666666666667,
+          "cost_at_0.50": 2.858833333333333,
+          "relative_difference": 0.02665813606312637
+        }
+      }
+    },
+    {
+      "seed": 54,
+      "prediction_first_model": "XGBoost",
+      "tie_break_used": false,
+      "by_ratio": {
+        "2": {
+          "a_model": "XGBoost",
+          "a_threshold": 0.32,
+          "a_test_cost": 0.30833333333333335,
+          "b_model": "RandomForest",
+          "b_threshold": 0.29,
+          "b_test_cost": 0.2995,
+          "cost_at_0.50": 0.329,
+          "relative_difference": 0.028648648648648734
+        },
+        "5": {
+          "a_model": "XGBoost",
+          "a_threshold": 0.21,
+          "a_test_cost": 0.5641666666666667,
+          "b_model": "RandomForest",
+          "b_threshold": 0.17,
+          "b_test_cost": 0.5486666666666666,
+          "cost_at_0.50": 0.764,
+          "relative_difference": 0.027474150664697314
+        },
+        "10": {
+          "a_model": "XGBoost",
+          "a_threshold": 0.09,
+          "a_test_cost": 0.7165,
+          "b_model": "RandomForest",
+          "b_threshold": 0.11,
+          "b_test_cost": 0.7155,
+          "cost_at_0.50": 1.489,
+          "relative_difference": 0.0013956734124214946
+        },
+        "20": {
+          "a_model": "XGBoost",
+          "a_threshold": 0.02,
+          "a_test_cost": 0.777,
+          "b_model": "RandomForest",
+          "b_threshold": 0.06,
+          "b_test_cost": 0.7603333333333333,
+          "cost_at_0.50": 2.939,
+          "relative_difference": 0.021450021450021516
+        }
+      }
+    },
+    {
+      "seed": 55,
+      "prediction_first_model": "XGBoost",
+      "tie_break_used": false,
+      "by_ratio": {
+        "2": {
+          "a_model": "XGBoost",
+          "a_threshold": 0.35,
+          "a_test_cost": 0.2956666666666667,
+          "b_model": "RandomForest",
+          "b_threshold": 0.36,
+          "b_test_cost": 0.29433333333333334,
+          "cost_at_0.50": 0.32,
+          "relative_difference": 0.004509582863585185
+        },
+        "5": {
+          "a_model": "XGBoost",
+          "a_threshold": 0.2,
+          "a_test_cost": 0.5563333333333333,
+          "b_model": "RandomForest",
+          "b_threshold": 0.2,
+          "b_test_cost": 0.563,
+          "cost_at_0.50": 0.739,
+          "relative_difference": -0.011983223487117911
+        },
+        "10": {
+          "a_model": "XGBoost",
+          "a_threshold": 0.08,
+          "a_test_cost": 0.716,
+          "b_model": "RandomForest",
+          "b_threshold": 0.11,
+          "b_test_cost": 0.7243333333333334,
+          "cost_at_0.50": 1.4373333333333334,
+          "relative_difference": -0.011638733705772926
+        },
+        "20": {
+          "a_model": "XGBoost",
+          "a_threshold": 0.03,
+          "a_test_cost": 0.7913333333333333,
+          "b_model": "RandomForest",
+          "b_threshold": 0.07,
+          "b_test_cost": 0.7703333333333333,
+          "cost_at_0.50": 2.834,
+          "relative_difference": 0.026537489469250233
+        }
+      }
+    },
+    {
+      "seed": 56,
+      "prediction_first_model": "HistGradientBoosting",
+      "tie_break_used": false,
+      "by_ratio": {
+        "2": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.34,
+          "a_test_cost": 0.31066666666666665,
+          "b_model": "XGBoost",
+          "b_threshold": 0.32,
+          "b_test_cost": 0.30716666666666664,
+          "cost_at_0.50": 0.323,
+          "relative_difference": 0.01126609442060087
+        },
+        "5": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.16,
+          "a_test_cost": 0.5661666666666667,
+          "b_model": "RandomForest",
+          "b_threshold": 0.17,
+          "b_test_cost": 0.5495,
+          "cost_at_0.50": 0.751,
+          "relative_difference": 0.02943773918163094
+        },
+        "10": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.08,
+          "a_test_cost": 0.7136666666666667,
+          "b_model": "HistGradientBoosting",
+          "b_threshold": 0.08,
+          "b_test_cost": 0.7136666666666667,
+          "cost_at_0.50": 1.4643333333333333,
+          "relative_difference": 0.0
+        },
+        "20": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.01,
+          "a_test_cost": 0.7763333333333333,
+          "b_model": "RandomForest",
+          "b_threshold": 0.07,
+          "b_test_cost": 0.7523333333333333,
+          "cost_at_0.50": 2.891,
+          "relative_difference": 0.03091455560326323
+        }
+      }
+    },
+    {
+      "seed": 57,
+      "prediction_first_model": "XGBoost",
+      "tie_break_used": false,
+      "by_ratio": {
+        "2": {
+          "a_model": "XGBoost",
+          "a_threshold": 0.34,
+          "a_test_cost": 0.30533333333333335,
+          "b_model": "RandomForest",
+          "b_threshold": 0.31,
+          "b_test_cost": 0.3035,
+          "cost_at_0.50": 0.32133333333333336,
+          "relative_difference": 0.00600436681222714
+        },
+        "5": {
+          "a_model": "XGBoost",
+          "a_threshold": 0.17,
+          "a_test_cost": 0.5653333333333334,
+          "b_model": "XGBoost",
+          "b_threshold": 0.17,
+          "b_test_cost": 0.5653333333333334,
+          "cost_at_0.50": 0.7293333333333333,
+          "relative_difference": 0.0
+        },
+        "10": {
+          "a_model": "XGBoost",
+          "a_threshold": 0.07,
+          "a_test_cost": 0.7296666666666667,
+          "b_model": "RandomForest",
+          "b_threshold": 0.1,
+          "b_test_cost": 0.7096666666666667,
+          "cost_at_0.50": 1.4093333333333333,
+          "relative_difference": 0.02740977615349477
+        },
+        "20": {
+          "a_model": "XGBoost",
+          "a_threshold": 0.01,
+          "a_test_cost": 0.7763333333333333,
+          "b_model": "RandomForest",
+          "b_threshold": 0.06,
+          "b_test_cost": 0.7613333333333333,
+          "cost_at_0.50": 2.7693333333333334,
+          "relative_difference": 0.01932159725203952
+        }
+      }
+    },
+    {
+      "seed": 58,
+      "prediction_first_model": "RandomForest",
+      "tie_break_used": false,
+      "by_ratio": {
+        "2": {
+          "a_model": "RandomForest",
+          "a_threshold": 0.37,
+          "a_test_cost": 0.30483333333333335,
+          "b_model": "RandomForest",
+          "b_threshold": 0.37,
+          "b_test_cost": 0.30483333333333335,
+          "cost_at_0.50": 0.31783333333333336,
+          "relative_difference": 0.0
+        },
+        "5": {
+          "a_model": "RandomForest",
+          "a_threshold": 0.14,
+          "a_test_cost": 0.5673333333333334,
+          "b_model": "RandomForest",
+          "b_threshold": 0.14,
+          "b_test_cost": 0.5673333333333334,
+          "cost_at_0.50": 0.7383333333333333,
+          "relative_difference": 0.0
+        },
+        "10": {
+          "a_model": "RandomForest",
+          "a_threshold": 0.09,
+          "a_test_cost": 0.7096666666666667,
+          "b_model": "RandomForest",
+          "b_threshold": 0.09,
+          "b_test_cost": 0.7096666666666667,
+          "cost_at_0.50": 1.4391666666666667,
+          "relative_difference": 0.0
+        },
+        "20": {
+          "a_model": "RandomForest",
+          "a_threshold": 0.08,
+          "a_test_cost": 0.7965,
+          "b_model": "RandomForest",
+          "b_threshold": 0.08,
+          "b_test_cost": 0.7965,
+          "cost_at_0.50": 2.8408333333333333,
+          "relative_difference": 0.0
+        }
+      }
+    },
+    {
+      "seed": 59,
+      "prediction_first_model": "HistGradientBoosting",
+      "tie_break_used": false,
+      "by_ratio": {
+        "2": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.3,
+          "a_test_cost": 0.30266666666666664,
+          "b_model": "RandomForest",
+          "b_threshold": 0.28,
+          "b_test_cost": 0.30416666666666664,
+          "cost_at_0.50": 0.31583333333333335,
+          "relative_difference": -0.004955947136563881
+        },
+        "5": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.15,
+          "a_test_cost": 0.5501666666666667,
+          "b_model": "XGBoost",
+          "b_threshold": 0.15,
+          "b_test_cost": 0.5483333333333333,
+          "cost_at_0.50": 0.7283333333333334,
+          "relative_difference": 0.0033323235383217573
+        },
+        "10": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.07,
+          "a_test_cost": 0.737,
+          "b_model": "XGBoost",
+          "b_threshold": 0.07,
+          "b_test_cost": 0.7456666666666667,
+          "cost_at_0.50": 1.4158333333333333,
+          "relative_difference": -0.011759384893713313
+        },
+        "20": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.03,
+          "a_test_cost": 0.7986666666666666,
+          "b_model": "RandomForest",
+          "b_threshold": 0.07,
+          "b_test_cost": 0.7658333333333334,
+          "cost_at_0.50": 2.7908333333333335,
+          "relative_difference": 0.04111018363939892
+        }
+      }
+    },
+    {
+      "seed": 60,
+      "prediction_first_model": "RandomForest",
+      "tie_break_used": false,
+      "by_ratio": {
+        "2": {
+          "a_model": "RandomForest",
+          "a_threshold": 0.32,
+          "a_test_cost": 0.30533333333333335,
+          "b_model": "RandomForest",
+          "b_threshold": 0.32,
+          "b_test_cost": 0.30533333333333335,
+          "cost_at_0.50": 0.33,
+          "relative_difference": 0.0
+        },
+        "5": {
+          "a_model": "RandomForest",
+          "a_threshold": 0.21,
+          "a_test_cost": 0.5728333333333333,
+          "b_model": "HistGradientBoosting",
+          "b_threshold": 0.18,
+          "b_test_cost": 0.5696666666666667,
+          "cost_at_0.50": 0.7655,
+          "relative_difference": 0.0055280768111725075
+        },
+        "10": {
+          "a_model": "RandomForest",
+          "a_threshold": 0.1,
+          "a_test_cost": 0.692,
+          "b_model": "RandomForest",
+          "b_threshold": 0.1,
+          "b_test_cost": 0.692,
+          "cost_at_0.50": 1.4913333333333334,
+          "relative_difference": 0.0
+        },
+        "20": {
+          "a_model": "RandomForest",
+          "a_threshold": 0.05,
+          "a_test_cost": 0.7708333333333334,
+          "b_model": "RandomForest",
+          "b_threshold": 0.05,
+          "b_test_cost": 0.7708333333333334,
+          "cost_at_0.50": 2.943,
+          "relative_difference": 0.0
+        }
+      }
+    },
+    {
+      "seed": 61,
+      "prediction_first_model": "HistGradientBoosting",
+      "tie_break_used": false,
+      "by_ratio": {
+        "2": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.36,
+          "a_test_cost": 0.305,
+          "b_model": "RandomForest",
+          "b_threshold": 0.27,
+          "b_test_cost": 0.3011666666666667,
+          "cost_at_0.50": 0.31216666666666665,
+          "relative_difference": 0.012568306010928851
+        },
+        "5": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.18,
+          "a_test_cost": 0.5526666666666666,
+          "b_model": "RandomForest",
+          "b_threshold": 0.2,
+          "b_test_cost": 0.5435,
+          "cost_at_0.50": 0.7211666666666666,
+          "relative_difference": 0.01658624849215921
+        },
+        "10": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.06,
+          "a_test_cost": 0.7028333333333333,
+          "b_model": "RandomForest",
+          "b_threshold": 0.11,
+          "b_test_cost": 0.7033333333333334,
+          "cost_at_0.50": 1.4028333333333334,
+          "relative_difference": -0.0007114062129476727
+        },
+        "20": {
+          "a_model": "HistGradientBoosting",
+          "a_threshold": 0.01,
+          "a_test_cost": 0.7766666666666666,
+          "b_model": "RandomForest",
+          "b_threshold": 0.06,
+          "b_test_cost": 0.7603333333333333,
+          "cost_at_0.50": 2.766166666666667,
+          "relative_difference": 0.021030042918454908
+        }
+      }
+    }
+  ],
+  "elapsed_seconds": 89.18997949499999
 }

@@ -2,6 +2,8 @@
 
 This repository reproduces a short communication on cost-aware credit decisions. Two validation rules turn predicted default probabilities into a thresholded action. Strategy A (prediction-first) fixes the model by validation F1 at threshold 0.50, then chooses a cost-minimizing threshold. Strategy B (decision-first) chooses the model and the threshold together by validation cost. The test split is scored once.
 
+The primary split and the bootstrap use seed 42. The same split is repeated for seeds 42 through 61. Model fitting keeps random seed 42, so only the partition changes. The min, median, and max across those splits are a stability range, not a confidence interval.
+
 The manuscript is [`manuscript.tex`](manuscript.tex).
 
 ## Reproduce
@@ -23,8 +25,8 @@ pdflatex manuscript.tex
 
 ## Figures
 
-- `Figure_1.pdf` is an explanatory diagram of the decision framework: the data, the four probability models, validation selection, the two strategies, and one locked test evaluation.
-- `Figure_2.pdf` is a plot from this run. Panel (a) shows the chosen threshold against the false-negative cost ratio for both strategies, including the shift away from 0.50. Panel (b) shows the test cost per case, including strategy A scored at threshold 0.50.
+- `Figure_1.pdf` is the seed-42 validation cost of the prediction-first model against the threshold, one panel for each cost ratio. The circle is the chosen threshold. The dotted line is threshold 0.50.
+- `Figure_2.pdf` is a plot from this run. Markers are the seed-42 rules. Panel (a) shows the chosen threshold against the false-negative cost ratio for both strategies. Panel (b) shows the test cost per case, including strategy A scored at threshold 0.50. Whiskers are the minimum and maximum over 20 stratified splits (seeds 42 through 61). They are not a confidence interval. The bootstrap interval in the manuscript is only for seed 42.
 
 ## License
 

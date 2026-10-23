@@ -29,7 +29,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import xlrd
-from matplotlib.patches import FancyBboxPatch
 from sklearn.ensemble import HistGradientBoostingClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
@@ -50,6 +49,7 @@ UCI_XLS = (
 XLS_NAME = "default of credit card clients.xls"
 TARGET = "default payment next month"
 SEED = 42
+SPLIT_SEEDS = tuple(range(42, 62))
 RATIOS = (2, 5, 10, 20)
 N_BOOT = 1000
 THRESHOLDS = np.array([i / 100 for i in range(1, 100)], dtype=np.float64)
@@ -286,85 +286,47 @@ def point_cost(y: np.ndarray, predicted: np.ndarray, ratio: int) -> float:
     return float((false_positive + ratio * false_negative) / labels.shape[0])
 
 
-def draw_box(ax, x, y, width, height, text, face, edge) -> None:
-    patch = FancyBboxPatch(
-        (x, y),
-        width,
-        height,
-        boxstyle="round,pad=0.006,rounding_size=0.012",
-        facecolor=face,
-        edgecolor=edge,
-        linewidth=0.9,
-        transform=ax.transAxes,
-        mutation_aspect=0.6,
-    )
-    ax.add_patch(patch)
-    ax.text(
-        x + width / 2,
-        y + height / 2,
-        text,
-        ha="center",
-        va="center",
-        fontsize=6.6,
-        color="#1a1a1a",
-        transform=ax.transAxes,
-        linespacing=1.15,
-    )
+RATIO_STYLE = {
+    2: ("#0072B2", "-"),
+    5: ("#E69F00", "--"),
+    10: ("#009E73", "-."),
+    20: ("#D55E00", ":"),
+}
 
 
-def arrow(ax, start, end) -> None:
-    ax.annotate(
-        "",
-        xy=end,
-        xytext=start,
-        xycoords=ax.transAxes,
-        textcoords=ax.transAxes,
-        arrowprops={"arrowstyle": "-|>", "color": "#333333", "lw": 0.7, "shrinkA": 0, "shrinkB": 0},
+def save_figure_1(path: Path, results: dict) -> None:
+    plt.rcParams.update(
+        {
+            "pdf.fonttype": 42,
+            "ps.fonttype": 42,
+            "font.family": "DejaVu Sans",
+            "font.size": 7.5,
+            "axes.labelsize": 7.5,
+            "xtick.labelsize": 6.5,
+            "ytick.labelsize": 6.5,
+            "axes.linewidth": 0.6,
+        }
     )
-
-
-def save_figure_1(path: Path) -> None:
-    plt.rcParams.update({"pdf.fonttype": 42, "ps.fonttype": 42, "font.family": "DejaVu Sans"})
-    fig, ax = plt.subplots(figsize=(9 / 2.54, 11.2 / 2.54))
-    ax.set_axis_off()
-    ax.set_xlim(0, 1)
-    ax.set_ylim(0, 1)
-    draw_box(
-        ax, 0.08, 0.835, 0.84, 0.135,
-        "UCI credit-card default file\n30,000 accounts; drop ID\nSEX is in the file and is excluded",
-        "#E8F4FC", BLUE,
-    )
-    draw_box(
-        ax, 0.08, 0.655, 0.84, 0.135,
-        "Four probability models\nfit on the training split only\nno class weights",
-        "#E7F6F1", GREEN,
-    )
-    draw_box(
-        ax, 0.08, 0.475, 0.84, 0.135,
-        "Validation selection\ngrid 0.01 to 0.99\nF1 and normalized cost; test untouched",
-        "#FFF6DE", "#E69F00",
-    )
-    draw_box(
-        ax, 0.05, 0.230, 0.42, 0.185,
-        "A. Prediction-first\nBest validation F1 at 0.50,\nthen the threshold that\nminimizes validation cost",
-        "#E8F1FA", BLUE,
-    )
-    draw_box(
-        ax, 0.53, 0.230, 0.42, 0.185,
-        "B. Decision-first\nFor each cost ratio,\nminimize validation cost\nover model and threshold",
-        "#FDECE6", VERMILION,
-    )
-    draw_box(
-        ax, 0.08, 0.030, 0.84, 0.145,
-        "One locked test evaluation\ncost per case, (A − B) / A,\npaired bootstrap 95% interval",
-        "#F7F0FA", "#CC79A7",
-    )
-    arrow(ax, (0.50, 0.835), (0.50, 0.790))
-    arrow(ax, (0.50, 0.655), (0.50, 0.610))
-    arrow(ax, (0.32, 0.475), (0.26, 0.415))
-    arrow(ax, (0.68, 0.475), (0.74, 0.415))
-    arrow(ax, (0.26, 0.230), (0.40, 0.175))
-    arrow(ax, (0.74, 0.230), (0.60, 0.175))
+    fig, axes = plt.subplots(2, 2, figsize=(9 / 2.54, 7.6 / 2.54), sharex=True)
+    for axis, ratio in zip(axes.ravel(), RATIOS):
+        curve = np.asarray(results["by_ratio"][str(ratio)]["strategy_a"]["validation_cost_curve"], dtype=float)
+        color, style = RATIO_STYLE[ratio]
+        chosen = results["by_ratio"][str(ratio)]["strategy_a"]["threshold"]
+        axis.plot(THRESHOLDS, curve, color=color, linestyle=style, linewidth=1.1)
+        chosen_cost = float(curve[int(np.where(np.isclose(THRESHOLDS, chosen))[0][0])])
+        axis.plot([chosen], [chosen_cost], marker="o", color=color, markersize=4.5)
+        axis.axvline(0.50, color=GRAY, linestyle=":", linewidth=0.7)
+        # r = 2 is high on the left, so its label sits on the right.
+        label_x = 0.58 if ratio == 2 else 0.06
+        axis.text(label_x, 0.86, f"r = {ratio}", transform=axis.transAxes, fontsize=7)
+        axis.spines["top"].set_visible(False)
+        axis.spines["right"].set_visible(False)
+        axis.grid(axis="y", color="#dddddd", linewidth=0.4)
+    axes[0, 0].set_ylabel("Val. cost")
+    axes[1, 0].set_ylabel("Val. cost")
+    axes[1, 0].set_xlabel("Threshold")
+    axes[1, 1].set_xlabel("Threshold")
+    fig.tight_layout(h_pad=0.45, w_pad=0.35)
     fig.savefig(path, format="pdf", bbox_inches="tight", pad_inches=0.04)
     plt.close(fig)
 
@@ -385,19 +347,30 @@ def save_figure_2(path: Path, results: dict) -> None:
     )
     ratios = [int(ratio) for ratio in results["by_ratio"]]
     positions = np.arange(len(ratios))
-    threshold_a = [results["by_ratio"][str(ratio)]["strategy_a"]["threshold"] for ratio in ratios]
-    threshold_b = [results["by_ratio"][str(ratio)]["strategy_b"]["threshold"] for ratio in ratios]
-    cost_a = [results["by_ratio"][str(ratio)]["strategy_a"]["test_cost"] for ratio in ratios]
-    cost_b = [results["by_ratio"][str(ratio)]["strategy_b"]["test_cost"] for ratio in ratios]
-    cost_half = [
-        results["by_ratio"][str(ratio)]["threshold_effect"]["test_cost_at_0.50"] for ratio in ratios
-    ]
+    summary = results["repeat_summary"]["by_ratio"]
 
-    fig, axes = plt.subplots(2, 1, figsize=(9 / 2.54, 11.0 / 2.54), sharex=True)
-    axes[0].plot(positions, threshold_a, color=BLUE, marker="o", linestyle="-", label="A prediction-first", linewidth=1.2, markersize=4.5)
-    axes[0].plot(positions, threshold_b, color=VERMILION, marker="s", linestyle="--", label="B decision-first", linewidth=1.2, markersize=4.5)
+    def series(key: str) -> np.ndarray:
+        return np.array([summary[str(ratio)][key]["seed42"] for ratio in ratios], dtype=float)
+
+    def whisker(key: str) -> np.ndarray:
+        primary = series(key)
+        low = np.array([summary[str(ratio)][key]["min"] for ratio in ratios], dtype=float)
+        high = np.array([summary[str(ratio)][key]["max"] for ratio in ratios], dtype=float)
+        return np.vstack([primary - low, high - primary])
+
+    threshold_a = series("threshold_a")
+    threshold_b = series("threshold_b")
+    cost_a = series("test_cost_a")
+    cost_b = series("test_cost_b")
+    cost_half = series("test_cost_at_0.50")
+
+    fig, axes = plt.subplots(2, 1, figsize=(9 / 2.54, 8.2 / 2.54), sharex=True)
+    axes[0].errorbar(positions, threshold_a, yerr=whisker("threshold_a"), color=BLUE, marker="o", linestyle="-", label="A prediction-first", linewidth=1.2, markersize=4.5, capsize=2, elinewidth=0.7)
+    axes[0].errorbar(positions, threshold_b, yerr=whisker("threshold_b"), color=VERMILION, marker="s", linestyle="--", label="B decision-first", linewidth=1.2, markersize=4.5, capsize=2, elinewidth=0.7)
     axes[0].axhline(0.50, color=GRAY, linestyle=":", linewidth=0.9, label="threshold 0.50")
-    threshold_limits = threshold_a + threshold_b + [0.50]
+    threshold_limits = list(threshold_a) + list(threshold_b) + [0.50]
+    threshold_limits += [summary[str(ratio)]["threshold_a"]["min"] for ratio in ratios]
+    threshold_limits += [summary[str(ratio)]["threshold_b"]["max"] for ratio in ratios]
     axes[0].set_ylim(min(threshold_limits) - 0.06, max(threshold_limits) + 0.08)
     axes[0].set_ylabel("Threshold")
     axes[0].text(0.02, 0.90, "(a)", transform=axes[0].transAxes, fontsize=8, fontweight="bold")
@@ -406,9 +379,9 @@ def save_figure_2(path: Path, results: dict) -> None:
     axes[0].spines["right"].set_visible(False)
     axes[0].grid(axis="y", color="#dddddd", linewidth=0.4)
 
-    axes[1].plot(positions, cost_a, color=BLUE, marker="o", linestyle="-", label="A prediction-first", linewidth=1.2, markersize=4.5)
-    axes[1].plot(positions, cost_b, color=VERMILION, marker="s", linestyle="--", label="B decision-first", linewidth=1.2, markersize=4.5)
-    axes[1].plot(positions, cost_half, color=GREEN, marker="x", linestyle=":", label="A at 0.50", linewidth=1.2, markersize=5)
+    axes[1].errorbar(positions, cost_a, yerr=whisker("test_cost_a"), color=BLUE, marker="o", linestyle="-", label="A prediction-first", linewidth=1.2, markersize=4.5, capsize=2, elinewidth=0.7)
+    axes[1].errorbar(positions, cost_b, yerr=whisker("test_cost_b"), color=VERMILION, marker="s", linestyle="--", label="B decision-first", linewidth=1.2, markersize=4.5, capsize=2, elinewidth=0.7)
+    axes[1].errorbar(positions, cost_half, yerr=whisker("test_cost_at_0.50"), color=GREEN, marker="x", linestyle=":", label="A at 0.50", linewidth=1.2, markersize=5, capsize=2, elinewidth=0.7)
     axes[1].set_ylabel("Test cost")
     axes[1].set_xlabel("Cost ratio r")
     axes[1].text(0.02, 0.90, "(b)", transform=axes[1].transAxes, fontsize=8, fontweight="bold")
@@ -447,17 +420,13 @@ def json_ready(value):
     return value
 
 
-def run_experiment() -> dict:
-    started = time.perf_counter()
-    if not np.array_equal(THRESHOLDS, np.round(THRESHOLDS, 2)):
-        raise SystemExit("Threshold grid is not on the 0.01 lattice.")
+def analyze_split(frame_x: pd.DataFrame, frame_y: pd.Series, seed: int) -> dict:
     half = index_of_half()
-    frame_x, frame_y, meta = load_frame(download_xls())
     x_trainval, x_test, y_trainval, y_test = train_test_split(
-        frame_x, frame_y, test_size=6000, stratify=frame_y, random_state=SEED, shuffle=True
+        frame_x, frame_y, test_size=6000, stratify=frame_y, random_state=seed, shuffle=True
     )
     x_train, x_val, y_train, y_val = train_test_split(
-        x_trainval, y_trainval, test_size=6000, stratify=y_trainval, random_state=SEED, shuffle=True
+        x_trainval, y_trainval, test_size=6000, stratify=y_trainval, random_state=seed, shuffle=True
     )
     if (len(x_train), len(x_val), len(x_test)) != (18000, 6000, 6000):
         raise SystemExit("Split sizes were not 18000/6000/6000.")
@@ -473,7 +442,8 @@ def run_experiment() -> dict:
     val_proba = {}
     val_counts = {}
     for name, model in build_models().items():
-        print(f"Fitting {name}", flush=True)
+        if seed == SEED:
+            print(f"Fitting {name}", flush=True)
         model.fit(x_train_np, y_train_np)
         fitted[name] = model
         proba = positive_proba(model, x_val_np)
@@ -534,7 +504,7 @@ def run_experiment() -> dict:
             cache = validation_cache[name]
             threshold = float(THRESHOLDS[index])
             numer = int(cache["fp"][index] + ratio * cache["fn"][index])
-            return {
+            packed = {
                 "model": name,
                 "display_name": DISPLAY[name],
                 "threshold": threshold,
@@ -543,6 +513,11 @@ def run_experiment() -> dict:
                 "validation_fp": int(cache["fp"][index]),
                 "validation_fn": int(cache["fn"][index]),
             }
+            if seed == SEED and name == model_a:
+                packed["validation_cost_curve"] = (
+                    (cache["fp"] + ratio * cache["fn"]) / len(y_val_np)
+                ).astype(float).tolist()
+            return packed
 
         by_ratio[str(ratio)] = {
             "strategy_a": pack(model_a, index_a),
@@ -552,11 +527,13 @@ def run_experiment() -> dict:
     # Test probabilities are computed only after every selection is locked.
     test_proba = {}
     for name in sorted(chosen_models):
-        print(f"Scoring test split with {name}", flush=True)
+        if seed == SEED:
+            print(f"Scoring test split with {name}", flush=True)
         test_proba[name] = positive_proba(fitted[name], x_test_np)
 
-    rng = np.random.default_rng(SEED)
-    resample_index = rng.integers(0, len(y_test_np), size=(N_BOOT, len(y_test_np)))
+    resample_index = None
+    if seed == SEED:
+        resample_index = np.random.default_rng(SEED).integers(0, len(y_test_np), size=(N_BOOT, len(y_test_np)))
 
     fixed_models = {row["strategy_a"]["model"] for row in by_ratio.values()}
     prediction_first_model = next(iter(fixed_models)) if len(fixed_models) == 1 else None
@@ -573,25 +550,10 @@ def run_experiment() -> dict:
         cost_half = point_cost(y_test_np, pred_half, ratio)
         if cost_a == 0:
             raise SystemExit(f"Test cost for strategy A at r={ratio} is zero; relative difference is undefined.")
-        low, high, includes_zero = paired_cost_difference(y_test_np, pred_a, pred_b, ratio, resample_index)
-        effect_low, effect_high, effect_includes = paired_cost_difference(
-            y_test_np, pred_half, pred_a, ratio, resample_index
-        )
         rule_a["test_cost"] = cost_a
         rule_b["test_cost"] = cost_b
         row["cost_difference"] = cost_a - cost_b
         row["relative_difference"] = (cost_a - cost_b) / cost_a
-        row["bootstrap"] = {
-            "n_resamples": N_BOOT,
-            "seed": SEED,
-            "method": "paired percentile",
-            "interval": "2.5 to 97.5",
-            "contrast": "test cost A minus test cost B",
-            "ci_low": low,
-            "ci_high": high,
-            "includes_zero": includes_zero,
-            "retrained": False,
-        }
         row["threshold_effect"] = {
             "model": rule_a["model"],
             "display_name": rule_a["display_name"],
@@ -599,19 +561,56 @@ def run_experiment() -> dict:
             "tuned_threshold": rule_a["threshold"],
             "test_cost_at_tuned_threshold": cost_a,
             "difference_0.50_minus_tuned": cost_half - cost_a,
-            "bootstrap": {
+        }
+        if resample_index is not None:
+            low, high, includes_zero = paired_cost_difference(y_test_np, pred_a, pred_b, ratio, resample_index)
+            effect_low, effect_high, effect_includes = paired_cost_difference(
+                y_test_np, pred_half, pred_a, ratio, resample_index
+            )
+            row["bootstrap"] = {
+                "n_resamples": N_BOOT,
+                "seed": SEED,
+                "method": "paired percentile",
+                "interval": "2.5 to 97.5",
+                "contrast": "test cost A minus test cost B",
+                "ci_low": low,
+                "ci_high": high,
+                "includes_zero": includes_zero,
+                "retrained": False,
+            }
+            row["threshold_effect"]["bootstrap"] = {
                 "contrast": "test cost at 0.50 minus test cost at the tuned threshold",
                 "ci_low": effect_low,
                 "ci_high": effect_high,
                 "includes_zero": effect_includes,
                 "same_resamples_as_strategy_contrast": True,
-            },
-        }
+            }
+
+    compact = {
+        "seed": seed,
+        "prediction_first_model": prediction_first_model,
+        "tie_break_used": tie_break_used,
+        "by_ratio": {
+            str(ratio): {
+                "a_model": by_ratio[str(ratio)]["strategy_a"]["model"],
+                "a_threshold": by_ratio[str(ratio)]["strategy_a"]["threshold"],
+                "a_test_cost": by_ratio[str(ratio)]["strategy_a"]["test_cost"],
+                "b_model": by_ratio[str(ratio)]["strategy_b"]["model"],
+                "b_threshold": by_ratio[str(ratio)]["strategy_b"]["threshold"],
+                "b_test_cost": by_ratio[str(ratio)]["strategy_b"]["test_cost"],
+                "cost_at_0.50": by_ratio[str(ratio)]["threshold_effect"]["test_cost_at_0.50"],
+                "relative_difference": by_ratio[str(ratio)]["relative_difference"],
+            }
+            for ratio in RATIOS
+        },
+    }
+    if seed != SEED:
+        return {"compact": compact, "full": None}
 
     results = {
-        "dataset": meta,
+        "dataset": None,
         "split": {
-            "seed": SEED,
+            "seed": seed,
             "stratified": True,
             "n_train": 18000,
             "n_validation": 6000,
@@ -682,7 +681,6 @@ def run_experiment() -> dict:
             "method": "paired percentile",
             "retrained": False,
         },
-        "elapsed_seconds": time.perf_counter() - started,
         "library_versions": {
             "numpy": np.__version__,
             "pandas": pd.__version__,
@@ -691,7 +689,70 @@ def run_experiment() -> dict:
             "matplotlib": matplotlib.__version__,
         },
     }
-    return json_ready(results)
+    return {"compact": compact, "full": results}
+
+
+def _range(values: list[float]) -> dict:
+    array = np.asarray(values, dtype=float)
+    return {"min": float(array.min()), "median": float(np.median(array)), "max": float(array.max())}
+
+
+def run_experiment() -> dict:
+    started = time.perf_counter()
+    if not np.array_equal(THRESHOLDS, np.round(THRESHOLDS, 2)):
+        raise SystemExit("Threshold grid is not on the 0.01 lattice.")
+    if SEED not in SPLIT_SEEDS:
+        raise SystemExit("The primary seed is not in the repeated-split list.")
+    frame_x, frame_y, meta = load_frame(download_xls())
+    compacts = []
+    primary = None
+    for seed in SPLIT_SEEDS:
+        print(f"Split seed {seed}", flush=True)
+        outcome = analyze_split(frame_x, frame_y, seed)
+        compacts.append(outcome["compact"])
+        if seed == SEED:
+            primary = outcome["full"]
+    if primary is None:
+        raise SystemExit("Primary split was not evaluated.")
+    summary = {}
+    for ratio in RATIOS:
+        rows = [item["by_ratio"][str(ratio)] for item in compacts]
+        primary_row = next(item["by_ratio"][str(ratio)] for item in compacts if item["seed"] == SEED)
+
+        def pack(key: str, primary_key: str) -> dict:
+            stats = _range([row[key] for row in rows])
+            stats["seed42"] = primary_row[primary_key]
+            return stats
+
+        tuned_lower = sum(row["cost_at_0.50"] > row["a_test_cost"] for row in rows)
+        decision_lower = sum(row["b_test_cost"] < row["a_test_cost"] for row in rows)
+        summary[str(ratio)] = {
+            "threshold_a": pack("a_threshold", "a_threshold"),
+            "threshold_b": pack("b_threshold", "b_threshold"),
+            "test_cost_a": pack("a_test_cost", "a_test_cost"),
+            "test_cost_b": pack("b_test_cost", "b_test_cost"),
+            "test_cost_at_0.50": pack("cost_at_0.50", "cost_at_0.50"),
+            "n_seeds_tuned_cost_below_0.50": int(tuned_lower),
+            "n_seeds_decision_first_lower_cost": int(decision_lower),
+            "prediction_first_models": sorted({item["prediction_first_model"] for item in compacts}),
+        }
+    model_counts = {}
+    for item in compacts:
+        model_counts[item["prediction_first_model"]] = model_counts.get(item["prediction_first_model"], 0) + 1
+    primary["dataset"] = meta
+    primary["split"]["n_repeated_splits"] = len(SPLIT_SEEDS)
+    primary["split"]["repeated_seeds"] = list(SPLIT_SEEDS)
+    primary["split"]["model_random_state"] = SEED
+    primary["repeat_summary"] = {
+        "n_seeds": len(SPLIT_SEEDS),
+        "seeds": list(SPLIT_SEEDS),
+        "prediction_first_model_counts": model_counts,
+        "by_ratio": summary,
+        "note": "Min, median, and max are over split seeds. They are not a confidence interval. The bootstrap interval is only for seed 42.",
+    }
+    primary["repeats"] = compacts
+    primary["elapsed_seconds"] = time.perf_counter() - started
+    return json_ready(primary)
 
 
 def require(condition: bool, errors: list[str], message: str) -> None:
@@ -863,6 +924,94 @@ def check_manuscript(results: dict) -> None:
         if "statistically significant" in tex.lower() or re.search(r"\bp\s*<\s*0\.", tex):
             errors.append("Manuscript uses a significance claim or a p-value. Report the interval instead.")
 
+    summary = results["repeat_summary"]
+    n_seeds = summary["n_seeds"]
+    require("seeds 42 through 61" in tex, errors, "Manuscript does not name seeds 42 through 61.")
+    require(f"{n_seeds} splits" in tex, errors, "Manuscript does not state the repeated-split count.")
+    require("not a confidence interval" in tex, errors, "Manuscript does not say the split range is not a confidence interval.")
+    counts = summary["prediction_first_model_counts"]
+    model_phrase = (
+        f"histogram gradient boosting on {counts['HistGradientBoosting']} splits, "
+        f"XGBoost on {counts['XGBoost']}, and the random forest on {counts['RandomForest']}"
+    )
+    require(model_phrase in tex, errors, f"Prediction-first model counts do not match: {model_phrase}")
+    require("No split used the cost tie-break." in tex, errors, "Manuscript does not state that no split used the cost tie-break.")
+    n_ties = sum(1 for item in results["repeats"] if item["tie_break_used"])
+    require(n_ties == 0, errors, f"A repeated split used the cost tie-break ({n_ties}), but the manuscript says none did.")
+
+    def triple(band: dict) -> str:
+        return f"{fmt4(band['min'])}, {fmt4(band['median'])}, {fmt4(band['max'])}"
+
+    cost_a = []
+    cost_b = []
+    cost_half = []
+    for ratio in RATIOS:
+        band = summary["by_ratio"][str(ratio)]
+        cost_a.append(f"$r={ratio}$, {triple(band['test_cost_a'])}")
+        cost_b.append(f"$r={ratio}$, {triple(band['test_cost_b'])}")
+        cost_half.append(f"$r={ratio}$, {triple(band['test_cost_at_0.50'])}")
+        require(
+            f"{fmt2(band['threshold_a']['min'])} to {fmt2(band['threshold_a']['max'])}" in tex,
+            errors,
+            f"Prediction-first threshold range for r={ratio} is missing.",
+        )
+    require(
+        "prediction-first test cost min, median, and max were " + "; ".join(cost_a) in test,
+        errors,
+        "Table 2 is missing the prediction-first cost range.",
+    )
+    require(
+        "Cost at threshold 0.50 min, median, and max were " + "; ".join(cost_half) in test,
+        errors,
+        "Table 2 is missing the threshold-0.50 cost range.",
+    )
+    require(
+        "Decision-first test cost min, median, and max were " + "; ".join(cost_b) in test,
+        errors,
+        "Table 2 is missing the decision-first cost range.",
+    )
+    tuned_counts = [summary["by_ratio"][str(ratio)]["n_seeds_tuned_cost_below_0.50"] for ratio in RATIOS]
+    decision_counts = [summary["by_ratio"][str(ratio)]["n_seeds_decision_first_lower_cost"] for ratio in RATIOS]
+    require(
+        tuned_counts[1] == tuned_counts[2] == tuned_counts[3],
+        errors,
+        "The compact tuned-cost sentence assumes equal counts at r=5, 10, and 20.",
+    )
+    require(
+        (
+            f"Tuned cost was lower on {tuned_counts[0]} of {n_seeds} splits at $r=2$ "
+            f"and on {tuned_counts[1]} of {n_seeds} splits at $r=5$, $r=10$, and $r=20$."
+        )
+        in test,
+        errors,
+        "Table 2 tuned-cost counts do not match.",
+    )
+    require(
+        (
+            "Decision-first test cost was strictly lower on "
+            f"{decision_counts[0]}, {decision_counts[1]}, {decision_counts[2]}, and {decision_counts[3]} "
+            f"of {n_seeds} splits."
+        )
+        in test,
+        errors,
+        "Table 2 decision-first counts do not match.",
+    )
+    forest_counts = [
+        sum(1 for item in results["repeats"] if item["by_ratio"][str(ratio)]["b_model"] == "RandomForest")
+        for ratio in RATIOS
+    ]
+    require(
+        (
+            f"random forest on {forest_counts[0]}, {forest_counts[1]}, {forest_counts[2]}, "
+            f"and {forest_counts[3]} of the {n_seeds} splits"
+        )
+        in tex,
+        errors,
+        "Decision-first random-forest counts do not match.",
+    )
+    n_edge = sum(1 for item in results["repeats"] if abs(item["by_ratio"]["20"]["a_threshold"] - 0.01) < 1e-9)
+    require(f"{n_edge} of the {n_seeds} splits" in tex, errors, "Grid-edge count for r=20 does not match.")
+
     if errors:
         print("Manuscript check failed:", flush=True)
         for error in errors:
@@ -903,13 +1052,25 @@ def print_summary(results: dict) -> None:
             f"CI=[{fmt4(effect['bootstrap']['ci_low'])}, {fmt4(effect['bootstrap']['ci_high'])}] "
             f"zero={effect['bootstrap']['includes_zero']}"
         )
+        band = results["repeat_summary"]["by_ratio"][str(ratio)]
+        print(
+            f"  seeds n={results['repeat_summary']['n_seeds']} "
+            f"A t [{fmt2(band['threshold_a']['min'])}, {fmt2(band['threshold_a']['median'])}, {fmt2(band['threshold_a']['max'])}] "
+            f"B t [{fmt2(band['threshold_b']['min'])}, {fmt2(band['threshold_b']['median'])}, {fmt2(band['threshold_b']['max'])}] "
+            f"A cost [{fmt4(band['test_cost_a']['min'])}, {fmt4(band['test_cost_a']['median'])}, {fmt4(band['test_cost_a']['max'])}] "
+            f"B cost [{fmt4(band['test_cost_b']['min'])}, {fmt4(band['test_cost_b']['median'])}, {fmt4(band['test_cost_b']['max'])}] "
+            f"0.50 [{fmt4(band['test_cost_at_0.50']['min'])}, {fmt4(band['test_cost_at_0.50']['median'])}, {fmt4(band['test_cost_at_0.50']['max'])}] "
+            f"tuned<0.50 {band['n_seeds_tuned_cost_below_0.50']}/{results['repeat_summary']['n_seeds']} "
+            f"B<A {band['n_seeds_decision_first_lower_cost']}/{results['repeat_summary']['n_seeds']}"
+        )
+    print("prediction-first counts", results["repeat_summary"]["prediction_first_model_counts"])
     print(f"Elapsed seconds: {results['elapsed_seconds']:.1f}")
 
 
 def main() -> None:
     results = run_experiment()
     (ROOT / "results.json").write_text(json.dumps(results, indent=2) + "\n", encoding="utf-8")
-    save_figure_1(ROOT / "Figure_1.pdf")
+    save_figure_1(ROOT / "Figure_1.pdf", results)
     save_figure_2(ROOT / "Figure_2.pdf", results)
     assert_vector_pdf(ROOT / "Figure_1.pdf")
     assert_vector_pdf(ROOT / "Figure_2.pdf")
