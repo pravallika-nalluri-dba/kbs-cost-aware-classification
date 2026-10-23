@@ -6,6 +6,7 @@
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage[hyphens]{url}
+\usepackage{multicol}
 \doublespacing
 \setlength{\parskip}{0pt}
 \urlstyle{same}
@@ -31,11 +32,14 @@ Credit decisions need an explicit cost for a missed default, not only a probabil
 {\sloppy\noindent\textbf{Keywords:} Cost-sensitive classification; Decision support; Decision threshold; Knowledge-based system; Credit scoring; Digital transformation\par}
 
 \section{Introduction}
-Knowledge-based systems support a human decision, not only a ranked score. In credit, a probability of default is not itself an action. When a missed default and a false alarm have different costs, the operating threshold is part of the decision \cite{elkan2001,provost2001}. Model comparison is already a large literature \cite{lessmann2015}. This short communication does not add another accuracy contest. It states a cost ratio as the knowledge a lender writes down, and it turns that ratio into a threshold another person can inspect \cite{vial2019}.
+Knowledge-based systems support a human decision, not only a ranked score. In credit, a probability of default is not itself an action. Decision-support credit scoring and automatic threshold learning already treat that action as the object to be chosen \cite{idbenjra2024,li2024}, and misclassification costs can be turned into explicit rules and trees \cite{kopanja2025}. This short communication keeps a simpler piece of knowledge. A lender writes down one false-negative cost ratio before any test account is scored, and that ratio selects a threshold another person can inspect.
 
-The ratio is fixed before any test account is scored. The knowledge is an explicit false-negative cost ratio. It is not a post hoc explanation of a fitted model. Prediction-first selection fixes the model by validation F1 at threshold 0.50, then tunes only the threshold. Decision-first selection chooses the model and the threshold together by validation cost. On each split, the test set is scored once, after both rules are locked. The contribution is Eq.~\eqref{eq:cost}, the two selection rules in Eqs.~\eqref{eq:strategy-a} and \eqref{eq:strategy-b}, and the same lock repeated on 20 stratified splits. Section~\ref{sec:results} separates the gap between the rules from the move away from threshold 0.50. The study does not claim that decision-first selection is uniformly superior.
+\begin{singlespace}\small
+Cost-sensitive objectives are used for default prediction, reject inference, credit-risk learning, company financial-distress prediction, and asymmetric-loss assessment \cite{xing2024,shen2024,crella2025,wangchi2024,zhao2024}. Some of those costs vary by account \cite{xing2024,crella2025}. Profit-driven scoring replaces a single ratio with a monetary loss \cite{xukou2025,xuergu2026}. The ratio \(r\) in this study is a scenario weight, not an estimated loss and not a per-account cost. Imbalance is often carried by the learner, by a changed boosting loss, or by resampling and augmentation \cite{tang2024,mushava2024,weng2025,nazri2025,sun2024,ranjan2024}. None of those devices is used here. Four probability models are fit without class weights, and the threshold grid carries both the base rate and \(r\).
 
-The comparison uses the public Default of Credit Card Clients file \cite{yeh2009}. It records credit-card accounts, not entrepreneurial startups. The operational question is whether a lender, including a smaller lending venture, can state a cost ratio and publish the threshold that ratio implies.
+Predictive comparisons are already a large literature: imbalanced and interpretable scoring \cite{chen2024,tu2025}, ensembles \cite{kwon2025,yang2024}, credit-card customer models \cite{chang2024}, stacking that brings in business knowledge \cite{ding2025}, cross-institution imbalanced scoring \cite{wang2025ejor}, and XGBoost hyperparameter search \cite{vikas2025}. This short communication does not add another accuracy contest.
+\end{singlespace}
+\doublespacing Prediction-first selection fixes the model by validation F1 at threshold 0.50, then tunes only the threshold. Decision-first selection chooses the model and the threshold together by validation cost. On each split, the test set is scored once, after both rules are locked. The contribution is Eq.~\eqref{eq:cost}, the two selection rules in Eqs.~\eqref{eq:strategy-a} and \eqref{eq:strategy-b}, and the same lock repeated on 20 stratified splits. Section~\ref{sec:results} separates the gap between the rules from the move away from threshold 0.50. The study does not claim that decision-first selection is uniformly superior. The comparison uses the public Default of Credit Card Clients file \cite{yeh2009,yehdata}.
 
 \section{Decision framework}
 \label{sec:framework}
@@ -44,7 +48,7 @@ The positive class is default payment next month. A model emits a probability, a
 c(r)=\frac{1\cdot\mathrm{FP}+r\cdot\mathrm{FN}}{N}.
 \label{eq:cost}
 \end{equation}
-The ratio \(r\) is a scenario weight, not an estimated monetary loss. The values used here are \(r\in\{2,5,10,20\}\). The threshold grid is \(\mathcal{T}=\{0.01,0.02,\ldots,0.99\}\). The models supply probabilities. They do not contain \(r\). The lender states \(r\), and the grid turns it into an action.
+The ratio \(r\) is a scenario weight, not an estimated monetary loss. The values used here are \(r\in\{2,5,10,20\}\). The threshold grid is \(\mathcal{T}=\{0.01,0.02,\ldots,0.99\}\).
 
 Let \(m\) index the candidate models, and let \(\mathrm{F1}_{\mathrm{val}}\) be the positive-class F1 on the validation split. Prediction-first selection fixes one model, then one threshold for each \(r\):
 \begin{equation}
@@ -65,13 +69,13 @@ Decision-first selection searches the pairs directly:
 Ties are broken by higher validation F1 at that threshold, then by model name, then by the lower threshold. Class imbalance is not handled with class weights. The grid search is the mechanism that carries both the base rate and the cost ratio. Neither rule may use the test split.
 
 \section{Experimental design}
-The source file is the UCI Default of Credit Card Clients workbook \cite{yeh2009,yehdata}. It has 30,000 accounts and 6,636 defaults (22.12\%). The identifier column is dropped. The public file contains SEX. SEX is removed before the split because a credit decision policy should not use sex, and this study does not estimate a sex effect. The other 22 predictors are kept as the numeric codes in the file, including education, marriage, age, recent repayment status, bill amounts, and payment amounts.
+The source file is the UCI Default of Credit Card Clients workbook \cite{yeh2009,yehdata}. It has 30,000 accounts and 6,636 defaults (22.12\%). The same file is still used for predictive comparisons \cite{bhandary2025}. The identifier column is dropped. The public file contains SEX. Algorithmic bias in credit scoring support systems is an active design problem \cite{lin2026}. SEX is removed before the split because a credit decision policy should not use sex, and this study does not estimate a sex effect. The other 22 predictors are kept as the numeric codes in the file, including education, marriage, age, recent repayment status, bill amounts, and payment amounts.
 
 The split and the bootstrap each use seed 42. The split is stratified. It holds out 6,000 test accounts and then holds out 6,000 validation accounts, leaving 18,000 training accounts. Models are fit only on the training accounts. Selection uses only the validation accounts. Test probabilities are computed after every model and threshold has been chosen.
 
 Four models produce probabilities, with random seed 42 wherever the implementation accepts one, and with no class weight. A logistic regression uses $C = 1$, after a standardizer, with the library's default L2 penalty. The other models are a random forest (200 trees, depth 10, minimum leaf size 5), histogram gradient boosting (200 iterations, depth 6, learning rate 0.1), and XGBoost (200 trees, depth 5, learning rate 0.1). Thresholds run from 0.01 to 0.99 in steps of 0.01. The decision predicts default when the probability is at least the threshold.
 
-Uncertainty is a paired bootstrap of the test accounts: 1,000 resamples, percentile interval from 2.5 to 97.5, seed 42. The same resamples are used for every contrast. The procedure does not refit models and does not rerun selection, so the interval is conditional on the locked rules. It asks whether the test-cost gap is stable to resampling of this test set. The reported contrasts are the strategy difference, test cost of A minus test cost of B, and, for the prediction-first model only, test cost at threshold 0.50 minus test cost at the tuned threshold. A positive strategy difference means decision-first selection has the lower test cost. The relative difference is that gap divided by the prediction-first test cost. If an interval includes zero, the difference is not statistically conclusive. Seeds 42 through 61 repeat the same stratified sizes, 20 splits in total, with the model random seed held at 42. The bootstrap is not recomputed. The minimum, median, and maximum across those splits are a stability range. They are not a confidence interval.
+Uncertainty is a paired bootstrap of the test accounts: 1,000 resamples, percentile interval from 2.5 to 97.5, seed 42. The same resamples are used for every contrast. The procedure does not refit models and does not rerun selection. A positive strategy difference means decision-first selection has the lower test cost. The relative difference is that gap divided by the prediction-first test cost. If an interval includes zero, the difference is not statistically conclusive. Seeds 42 through 61 repeat the same stratified sizes, 20 splits in total, with the model random seed held at 42. The minimum, median, and maximum across those splits are a stability range. They are not a confidence interval.
 
 \section{Results}
 \label{sec:results}
@@ -136,13 +140,11 @@ On the locked test split, the strategy gap is small relative to the cost of stay
 \end{singlespace}
 \end{table}
 
-The larger change is the threshold, not the selector. Figure~\ref{fig:costs} shows the prediction-first threshold moving from 0.50 down to 0.31, 0.16, 0.09, and 0.01. At \(r=2\), test cost moves from 0.3272 at threshold 0.50 to 0.3163 at the tuned threshold, and that interval includes zero, so the difference is not statistically conclusive. At \(r=5\), \(r=10\), and \(r=20\), the same contrast falls from 0.7522 to 0.5762, from 1.4605 to 0.7392, and from 2.8772 to 0.7815. Those three intervals exclude zero. Once a missed default is several times as costly as a false alarm, publishing a cost-tuned threshold changes the test cost by more than the choice between the two selectors.
-
-Figure~\ref{fig:curves} is the validation cost curve that produces the prediction-first thresholds on the seed-42 split. The circle is the minimizing threshold, labeled with its value, and the dotted line is 0.50. The curve falls as the threshold leaves 0.50, then rises. The same selection was repeated on seeds 42 through 61. The prediction-first model was histogram gradient boosting on 12 splits, XGBoost on 6, and the random forest on 2. No split used the cost tie-break. Prediction-first thresholds ranged from 0.30 to 0.38 at \(r=2\), 0.13 to 0.22 at \(r=5\), 0.05 to 0.10 at \(r=10\), and 0.01 to 0.08 at \(r=20\). Decision-first selection chose the random forest on 18, 12, 17, and 18 of the 20 splits. Table~\ref{tab:test} gives the min, median, and max of the test costs. The whiskers in Figure~\ref{fig:costs} are those minima and maxima. They are not a confidence interval. The bootstrap intervals apply only to seed 42.
+The larger change is the threshold, not the selector. At \(r=2\), test cost moves from 0.3272 at threshold 0.50 to 0.3163, and that interval includes zero. At \(r=5\), \(r=10\), and \(r=20\), the contrast falls from 0.7522 to 0.5762, from 1.4605 to 0.7392, and from 2.8772 to 0.7815, and those intervals exclude zero. Figure~\ref{fig:curves} is the validation curve for the seed-42 thresholds. Across seeds 42 through 61, the prediction-first model was histogram gradient boosting on 12 splits, XGBoost on 6, and the random forest on 2. No split used the cost tie-break. Prediction-first thresholds ranged from 0.30 to 0.38 at \(r=2\), 0.13 to 0.22 at \(r=5\), 0.05 to 0.10 at \(r=10\), and 0.01 to 0.08 at \(r=20\). Decision-first selection chose the random forest on 18, 12, 17, and 18 of the 20 splits. The whiskers in Figure~\ref{fig:costs} are those minima and maxima. They are not a confidence interval.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=9cm]{Figure_1.pdf}
+\includegraphics[width=7.6cm]{Figure_1.pdf}
 \begin{singlespace}
 \caption{Validation cost per case for the prediction-first model on the seed-42 validation split. Panels (a)--(d) are the cost ratios 2, 5, 10, and 20. The curve is Eq.~\eqref{eq:cost}. The circle marks the minimizing threshold and is labeled with its value. The dotted line is threshold 0.50.}
 \label{fig:curves}
@@ -151,7 +153,7 @@ Figure~\ref{fig:curves} is the validation cost curve that produces the predictio
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=9cm]{Figure_2.pdf}
+\includegraphics[width=7.6cm]{Figure_2.pdf}
 \begin{singlespace}
 \caption{Chosen threshold (a) and test cost per case (b) across false-negative cost ratios. Markers are the seed-42 rules. Circles are prediction-first selection. Squares are decision-first selection. Crosses score the prediction-first model at threshold 0.50. Whiskers run from the minimum to the maximum over 20 stratified splits (seeds 42 through 61). They are not a confidence interval. The dotted line in (a) is threshold 0.50. Model names for seed 42 are in Table~\ref{tab:test}.}
 \label{fig:costs}
@@ -159,10 +161,10 @@ Figure~\ref{fig:curves} is the validation cost curve that produces the predictio
 \end{figure}
 
 \section{Implications for entrepreneurial credit decisions}
-The practical object is a decision a person can audit. A credit operation writes down \(r\), the relative cost of missing a default, and publishes the threshold returned by Eq.~\eqref{eq:strategy-a} or Eq.~\eqref{eq:strategy-b}. A smaller lending venture can do the same on its own book. The auditable object is the pair \((r,t)\). On this file, setting \(r=10\) moves the prediction-first rule from 0.50 to 0.09. That is a change in the decision process of the sort digital-transformation research describes as organizational, not merely technical \cite{vial2019}. The UCI file contains Taiwanese credit-card clients \cite{yeh2009}. It is not a startup portfolio. Product, portfolio, and loss given default will differ in another book, and \(r\) here is a scenario weight rather than a measured loss.
+A credit operation, including a smaller lending venture, writes down \(r\) and publishes the threshold from Eq.~\eqref{eq:strategy-a} or Eq.~\eqref{eq:strategy-b}. On this file, \(r=10\) moves the prediction-first rule from 0.50 to 0.09. Online consumer credit is already framed as a risk-management task \cite{zhu2024}. Digital-transformation research treats the organizational resource, rather than the software alone, as what has to change \cite{piccoli2024}. Here that resource is the pair \((r,t)\). The UCI file contains Taiwanese credit-card clients \cite{yeh2009}. It is not a startup portfolio, and \(r\) is a scenario weight rather than a measured loss.
 
 \section{Conclusion}
-The useful output is a threshold tied to a stated cost ratio. On the seed-42 split, decision-first selection was conclusively cheaper only at \(r=2\). At \(r=5\), \(r=10\), and \(r=20\), the strategy difference was not statistically conclusive, and at \(r=5\) the point estimate favored prediction-first selection. Tuning the prediction-first threshold away from 0.50 changed test cost only modestly at \(r=2\), where the interval included zero, and by a conclusive margin at the three higher ratios. Across seeds 42 through 61, decision-first selection was not uniformly cheaper, and at ratios 5, 10, and 20 the tuned test cost was lower than the cost at 0.50 on all 20 splits. The bootstrap does not refit the models, and the range across splits is not a confidence interval. The \(r=20\) prediction-first threshold sits on the lower edge of the grid. SEX was present in the source file, was excluded from the predictors, and was not used to estimate a sex effect. Within those limits, a lender that can state \(r\) can publish the threshold that \(r\) implies.
+The useful output is a threshold tied to a stated cost ratio. Decision-first selection was conclusively cheaper only at \(r=2\). At \(r=5\), \(r=10\), and \(r=20\), the strategy difference was not statistically conclusive. Across seeds 42 through 61, tuned test cost was lower than the cost at 0.50 on all 20 splits at the three higher ratios, and that range is not a confidence interval. The \(r=20\) prediction-first threshold sits on the lower edge of the grid. SEX was excluded from the predictors and was not used to estimate a sex effect.
 
 \begin{singlespace}
 \section*{Data availability}
@@ -180,44 +182,42 @@ Pravallika Nalluri: Conceptualization, Methodology, Software, Validation, Formal
 \section*{Declaration of generative AI and AI-assisted technologies in the manuscript preparation process}
 During the preparation of this work the author used Cursor (Grok) to assist with code structure, experiment implementation, and language editing of the manuscript. After using this tool, the author reviewed and edited the content as needed and takes full responsibility for the content of the published article.
 
-\begin{thebibliography}{9}
-\bibitem{vial2019}
-Gregory Vial, 2019.
-Understanding digital transformation: A review and a research agenda.
-The Journal of Strategic Information Systems 28 (2), 118--144.
-\url{https://doi.org/10.1016/j.jsis.2019.01.003}
-
-\bibitem{lessmann2015}
-Stefan Lessmann, Bart Baesens, Hsin-Vonn Seow, Lyn C. Thomas, 2015.
-Benchmarking state-of-the-art classification algorithms for credit scoring: An update of research.
-European Journal of Operational Research 247 (1), 124--136.
-\url{https://doi.org/10.1016/j.ejor.2015.05.030}
-
-\bibitem{elkan2001}
-Charles Elkan, 2001.
-The foundations of cost-sensitive learning.
-In: Proceedings of the 17th International Joint Conference on Artificial Intelligence (IJCAI 2001), vol.\ 2, pp.\ 973--978.
-Morgan Kaufmann.
-
-\bibitem{provost2001}
-Foster Provost, Tom Fawcett, 2001.
-Robust classification for imprecise environments.
-Machine Learning 42 (3), 203--231.
-\url{https://doi.org/10.1023/A:1007601015854}
-
-\bibitem{yeh2009}
-I-Cheng Yeh, Che-hui Lien, 2009.
-The comparisons of data mining techniques for the predictive accuracy of probability of default of credit card clients.
-Expert Systems with Applications 36 (2), 2473--2480.
-\url{https://doi.org/10.1016/j.eswa.2007.12.020}
-
-\bibitem{yehdata}
-I-Cheng Yeh, 2009.
-Default of Credit Card Clients [dataset].
-UCI Machine Learning Repository.
-\url{https://doi.org/10.24432/C55S3H}
-
+{\scriptsize\sloppy\setlength{\itemsep}{0pt}\setlength{\parsep}{0pt}\setlength{\topsep}{0pt}
+\setlength{\columnsep}{0.7em}
+\begin{multicols}{2}
+\begin{thebibliography}{30}
+\bibitem{idbenjra2024} Khaoula Idbenjra, Kristof Coussement, Arno De Caigny, 2024. Investigating the beneficial impact of segmentation-based modelling for credit scoring. Decision Support Systems 179, 114170. \url{https://doi.org/10.1016/j.dss.2024.114170}
+\bibitem{li2024} Yusheng Li, Feng Gao, Mengyi Sha, Xueyan Shao, 2024. Sequential three-way decision with automatic threshold learning for credit risk prediction. Applied Soft Computing 165, 112127. \url{https://doi.org/10.1016/j.asoc.2024.112127}
+\bibitem{kopanja2025} Marija Kopanja, Milo\v{s} Savi\'{c}, Luca Longo, 2025. CORTEX: Cost-sensitive rule and tree extraction method. Knowledge-Based Systems 330, 114592. \url{https://doi.org/10.1016/j.knosys.2025.114592}
+\bibitem{xing2024} Jin Xing, Guotai Chi, Ancheng Pan, 2024. Instance-dependent misclassification cost-sensitive learning for default prediction. Research in International Business and Finance 69, 102265. \url{https://doi.org/10.1016/j.ribaf.2024.102265}
+\bibitem{shen2024} Feng Shen, Zhiyuan Yang, Jia Kuang, Zhangyao Zhu, 2024. Reject inference in credit scoring based on cost-sensitive learning and joint distribution adaptation method. Expert Systems with Applications 251, 124072. \url{https://doi.org/10.1016/j.eswa.2024.124072}
+\bibitem{crella2025} Jorge C-Rella, David Martinez Rego, Juan M. Vilar, 2025. Cost-sensitive reinforcement learning for credit risk. Expert Systems with Applications 272, 126708. \url{https://doi.org/10.1016/j.eswa.2025.126708}
+\bibitem{wangchi2024} Shanshan Wang, Guotai Chi, 2024. Cost-sensitive stacking ensemble learning for company financial distress prediction. Expert Systems with Applications 255, 124525. \url{https://doi.org/10.1016/j.eswa.2024.124525}
+\bibitem{zhao2024} Xiaoxi Zhao, Yingjie Tian, 2024. Credit risk assessment method driven by asymmetric loss function. Applied Soft Computing 167, 112355. \url{https://doi.org/10.1016/j.asoc.2024.112355}
+\bibitem{xukou2025} Yong Xu, Gang Kou, Daji Ergu, 2025. Profit-based uncertainty estimation with application to credit scoring. European Journal of Operational Research 325 (2), 303--316. \url{https://doi.org/10.1016/j.ejor.2025.03.007}
+\bibitem{xuergu2026} Yong Xu, Daji Ergu, 2026. Understanding the profit-driven credit scoring: New insights on loss functions and measures. Applied Soft Computing 186, 114184. \url{https://doi.org/10.1016/j.asoc.2025.114184}
+\bibitem{tang2024} Jingjing Tang, Yan Li, Zhaojie Hou, Saiji Fu, Yingjie Tian, 2024. Robust two-stage instance-level cost-sensitive learning method for class imbalance problem. Knowledge-Based Systems 300, 112143. \url{https://doi.org/10.1016/j.knosys.2024.112143}
+\bibitem{mushava2024} Jonah Mushava, Michael Murray, 2024. Flexible loss functions for binary classification in gradient-boosted decision trees: An application to credit scoring. Expert Systems with Applications 238, 121876. \url{https://doi.org/10.1016/j.eswa.2023.121876}
+\bibitem{weng2025} Futian Weng, Miao Zhu, Mike Buckle, Petr Hajek, Mohammad Zoynul Abedin, 2025. Class imbalance Bayesian model averaging for consumer loan default prediction: The role of soft credit information. Research in International Business and Finance 74, 102722. \url{https://doi.org/10.1016/j.ribaf.2024.102722}
+\bibitem{nazri2025} Azree Nazri, Olalekan Agbolade, Faisal Aziz, 2025. Hybrid reinforcement learning-active learning framework for real-data augmentation in imbalanced credit scoring. IEEE Access 13, 191005--191023. \url{https://doi.org/10.1109/ACCESS.2025.3608032}
+\bibitem{sun2024} Yutong Sun, Yanting Ji, Xiangxing Tao, 2024. Research on default classification of unbalanced credit data based on PixelCNN-WGAN. Electronics 13 (17), 3419. \url{https://doi.org/10.3390/electronics13173419}
+\bibitem{ranjan2024} Sudhansu Ranjan Lenka, Sukant Kishoro Bisoy, Rojalina Priyadarshini, Kueh Lee Hui, Mangal Sain, 2024. Evolutionary-based multi-objective and conditional generative adversarial networks for credit scoring. IEEE Access 12, 158346--158366. \url{https://doi.org/10.1109/ACCESS.2024.3486909}
+\bibitem{chen2024} Yujia Chen, Raffaella Calabrese, Belen Martin-Barragan, 2024. Interpretable machine learning for imbalanced credit scoring datasets. European Journal of Operational Research 312 (1), 357--372. \url{https://doi.org/10.1016/j.ejor.2023.06.036}
+\bibitem{tu2025} Jiancheng Tu, Zhibin Wu, 2025. Inherently interpretable machine learning for credit scoring: Optimal classification tree with hyperplane splits. European Journal of Operational Research 322 (2), 647--664. \url{https://doi.org/10.1016/j.ejor.2024.10.046}
+\bibitem{kwon2025} Soonjae Kwon, Jaeyeon Jang, Chang Ouk Kim, 2025. Credit scoring using multi-task Siamese neural network for improving prediction performance and stability. Expert Systems with Applications 259, 125327. \url{https://doi.org/10.1016/j.eswa.2024.125327}
+\bibitem{yang2024} Dongqi Yang, Binqing Xiao, Mengya Cao, Huaqi Shen, 2024. A new hybrid credit scoring ensemble model with feature enhancement and soft voting weight optimization. Expert Systems with Applications 238, 122101. \url{https://doi.org/10.1016/j.eswa.2023.122101}
+\bibitem{chang2024} Victor Chang, Sharuga Sivakulasingam, Hai Wang, Siu Tung Wong, Meghana Ashok Ganatra, Jiabin Luo, 2024. Credit risk prediction using machine learning and deep learning: A study on credit card customers. Risks 12 (11), 174. \url{https://doi.org/10.3390/risks12110174}
+\bibitem{ding2025} Ming-Liang Ding, Yu-Liang Ma, Fu-Qiang You, 2025. Domain-constrained stacking framework for credit default prediction. Mathematics 13 (21), 3451. \url{https://doi.org/10.3390/math13213451}
+\bibitem{wang2025ejor} Zhongyi Wang, Yuhang Tian, Sihan Li, Jin Xiao, 2025. A secure cross-silo collaborative method for imbalanced credit scoring. European Journal of Operational Research 326 (2), 357--373. \url{https://doi.org/10.1016/j.ejor.2025.04.020}
+\bibitem{vikas2025} Atul Vikas Lakra, Sudarson Jena, Kaushik Mishra, 2025. Optimizing XGBoost hyperparameters for credit scoring classification using weighted cognitive avoidance particle swarm. IEEE Access 13, 127292--127306. \url{https://doi.org/10.1109/ACCESS.2025.3585980}
+\bibitem{yeh2009} I-Cheng Yeh, Che-hui Lien, 2009. The comparisons of data mining techniques for the predictive accuracy of probability of default of credit card clients. Expert Systems with Applications 36 (2), 2473--2480. \url{https://doi.org/10.1016/j.eswa.2007.12.020}
+\bibitem{yehdata} I-Cheng Yeh, 2009. Default of Credit Card Clients [dataset]. UCI Machine Learning Repository. \url{https://doi.org/10.24432/C55S3H}
+\bibitem{bhandary2025} Rakshith Bhandary, Bidyut Kumar Ghosh, 2025. Credit card default prediction: An empirical analysis on predictive performance using statistical and machine learning methods. Journal of Risk and Financial Management 18 (1), 23. \url{https://doi.org/10.3390/jrfm18010023}
+\bibitem{lin2026} Junye Lin, Liping Yang, 2026. Mitigating algorithmic bias in credit scoring support systems through adversarial learning. Decision Support Systems 205, 114653. \url{https://doi.org/10.1016/j.dss.2026.114653}
+\bibitem{zhu2024} Miao Zhu, Ben-Chang Shia, Meng Su, Jialin Liu, 2024. Consumer default risk portrait: An intelligent management framework of online consumer credit default risk. Mathematics 12 (10), 1582. \url{https://doi.org/10.3390/math12101582}
+\bibitem{piccoli2024} Gabriele Piccoli, Varun Grover, Joaquin Rodriguez, 2024. Digital transformation requires digital resource primacy: Clarification and future research directions. The Journal of Strategic Information Systems 33 (2), 101835. \url{https://doi.org/10.1016/j.jsis.2024.101835}
 \end{thebibliography}
+\end{multicols}}
 \end{singlespace}
 
 \end{document}
