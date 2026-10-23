@@ -308,17 +308,32 @@ def save_figure_1(path: Path, results: dict) -> None:
         }
     )
     fig, axes = plt.subplots(2, 2, figsize=(9 / 2.54, 7.6 / 2.54), sharex=True)
+    panel = {2: "a", 5: "b", 10: "c", 20: "d"}
     for axis, ratio in zip(axes.ravel(), RATIOS):
         curve = np.asarray(results["by_ratio"][str(ratio)]["strategy_a"]["validation_cost_curve"], dtype=float)
         color, style = RATIO_STYLE[ratio]
-        chosen = results["by_ratio"][str(ratio)]["strategy_a"]["threshold"]
-        axis.plot(THRESHOLDS, curve, color=color, linestyle=style, linewidth=1.1)
-        chosen_cost = float(curve[int(np.where(np.isclose(THRESHOLDS, chosen))[0][0])])
-        axis.plot([chosen], [chosen_cost], marker="o", color=color, markersize=4.5)
+        chosen = float(results["by_ratio"][str(ratio)]["strategy_a"]["threshold"])
+        axis.plot(THRESHOLDS, curve, color=color, linestyle=style, linewidth=1.15)
+        chosen_index = int(np.where(np.isclose(THRESHOLDS, chosen))[0][0])
+        chosen_cost = float(curve[chosen_index])
+        axis.plot([chosen], [chosen_cost], marker="o", color=color, markersize=4.8, zorder=4)
+        y_span = float(curve.max() - curve.min())
+        axis.text(
+            min(chosen + 0.04, 0.86),
+            chosen_cost + 0.08 * y_span,
+            f"{chosen:.2f}",
+            color=color,
+            fontsize=6.2,
+            ha="left",
+            va="bottom",
+            clip_on=False,
+            zorder=5,
+        )
         axis.axvline(0.50, color=GRAY, linestyle=":", linewidth=0.7)
         # r = 2 is high on the left, so its label sits on the right.
-        label_x = 0.58 if ratio == 2 else 0.06
-        axis.text(label_x, 0.86, f"r = {ratio}", transform=axis.transAxes, fontsize=7)
+        label_x = 0.52 if ratio == 2 else 0.05
+        axis.text(label_x, 0.86, f"({panel[ratio]})  r = {ratio}", transform=axis.transAxes, fontsize=7)
+        axis.set_xlim(0.0, 1.0)
         axis.spines["top"].set_visible(False)
         axis.spines["right"].set_visible(False)
         axis.grid(axis="y", color="#dddddd", linewidth=0.4)
@@ -371,10 +386,10 @@ def save_figure_2(path: Path, results: dict) -> None:
     threshold_limits = list(threshold_a) + list(threshold_b) + [0.50]
     threshold_limits += [summary[str(ratio)]["threshold_a"]["min"] for ratio in ratios]
     threshold_limits += [summary[str(ratio)]["threshold_b"]["max"] for ratio in ratios]
-    axes[0].set_ylim(min(threshold_limits) - 0.06, max(threshold_limits) + 0.08)
+    axes[0].set_ylim(min(threshold_limits) - 0.05, 0.64)
     axes[0].set_ylabel("Threshold")
     axes[0].text(0.02, 0.90, "(a)", transform=axes[0].transAxes, fontsize=8, fontweight="bold")
-    axes[0].legend(frameon=False, loc="center left", bbox_to_anchor=(0.22, 0.62), handlelength=1.5, borderaxespad=0.1)
+    axes[0].legend(frameon=False, loc="upper right", handlelength=1.6, borderaxespad=0.2)
     axes[0].spines["top"].set_visible(False)
     axes[0].spines["right"].set_visible(False)
     axes[0].grid(axis="y", color="#dddddd", linewidth=0.4)
@@ -385,7 +400,7 @@ def save_figure_2(path: Path, results: dict) -> None:
     axes[1].set_ylabel("Test cost")
     axes[1].set_xlabel("Cost ratio r")
     axes[1].text(0.02, 0.90, "(b)", transform=axes[1].transAxes, fontsize=8, fontweight="bold")
-    axes[1].legend(frameon=False, loc="upper left", bbox_to_anchor=(0.16, 0.98), handlelength=1.5, borderaxespad=0.1)
+    axes[1].legend(frameon=False, loc="upper left", bbox_to_anchor=(0.14, 1.0), handlelength=1.6, borderaxespad=0.1)
     axes[1].spines["top"].set_visible(False)
     axes[1].spines["right"].set_visible(False)
     axes[1].grid(axis="y", color="#dddddd", linewidth=0.4)
