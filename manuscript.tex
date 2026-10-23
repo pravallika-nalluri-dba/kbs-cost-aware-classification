@@ -1,0 +1,217 @@
+\documentclass[12pt]{article}
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage{setspace}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[hyphens]{url}
+\doublespacing
+\setlength{\parskip}{0pt}
+\urlstyle{same}
+\begin{document}
+
+\title{A Knowledge-Based AI Framework for Data-Driven Cost-Aware Classification: Decision Support for Digital Transformation in Entrepreneurial Credit Innovation}
+\author{%
+Pravallika Nalluri\\[0.4em]
+\normalsize [Affiliation, City, Country]\\[0.25em]
+\normalsize Corresponding author. Email: [email]%
+}
+\date{}
+\maketitle
+
+\begin{abstract}
+\noindent
+Credit decisions need an explicit cost for a missed default, not only a probability. This study states a normalized decision cost and compares two knowledge-based rules that turn probabilities into a yes-or-no action. Both rules are locked on a validation split before one test evaluation. On the UCI credit-card default file (30,000 accounts; 6,636 defaults, 22.12\%), four probability models were fit without class weights. Prediction-first selection kept histogram gradient boosting, the model with the highest validation F1 at threshold 0.50 (0.4682), and then chose a cost-minimizing threshold. Decision-first selection searched every model and threshold for the lowest validation cost. On the test split, decision-first selection had the lower cost at a false-negative cost ratio of 2 (relative difference 0.0406; paired bootstrap 95\% interval for the cost difference, 0.0050 to 0.0210). At ratios 5, 10, and 20 that interval included zero, so the strategy difference is not statistically conclusive. For the prediction-first model, leaving threshold 0.50 reduced test cost at ratios 5, 10, and 20, and those intervals excluded zero; at ratio 2 the threshold contrast was not statistically conclusive. An explicit cost ratio is the practical control. It sets a threshold a lender can publish. The public file is not a startup portfolio.
+\end{abstract}
+
+{\sloppy\noindent\textbf{Keywords:} Cost-sensitive classification; Decision threshold; Knowledge-based system; Credit scoring; Digital transformation\par}
+
+\section{Introduction}
+Digital transformation changes how an organization defines a decision and who can inspect it \cite{vial2019}. Credit scoring already has a large literature that compares probability models \cite{lessmann2015}. A probability of default is not itself an action. When a missed default and a false alarm have different costs, the operating threshold is part of the decision \cite{elkan2001,provost2001}.
+
+This short communication treats that threshold as a knowledge-based policy. The knowledge is an explicit false-negative cost ratio. It is not a post hoc explanation of a fitted model. Two selection rules use the same candidate models and the same cost. Prediction-first selection chooses the model by validation F1 at the conventional threshold 0.50, then tunes only the threshold. Decision-first selection chooses the model and the threshold together by validation cost. The test set is scored once, after both rules are locked. The study does not claim that decision-first selection is uniformly superior. The contribution is the policy: a stated cost ratio turns probabilities into a thresholded decision, and moving that threshold is the practical effect to measure.
+
+The comparison uses the public Default of Credit Card Clients file \cite{yeh2009}. It records credit-card accounts, not entrepreneurial startups. The operational question is whether a lender, including a smaller lending venture, can state a cost ratio and publish the threshold that ratio implies.
+
+\section{Decision framework}
+\label{sec:framework}
+The positive class is default payment next month. A model emits a probability, and the decision predicts default when that probability is at least a threshold \(t\). A false positive is a predicted default that does not occur. A false negative is a missed default. With \(N\) cases in the split being scored, the normalized cost per case at false-negative ratio \(r\) is
+\begin{equation}
+c(r)=\frac{1\cdot\mathrm{FP}+r\cdot\mathrm{FN}}{N}.
+\label{eq:cost}
+\end{equation}
+The ratio \(r\) is a scenario weight, not an estimated monetary loss. The values used here are \(r\in\{2,5,10,20\}\). The threshold grid is \(\mathcal{T}=\{0.01,0.02,\ldots,0.99\}\).
+
+Let \(m\) index the candidate models, and let \(\mathrm{F1}_{\mathrm{val}}\) be the positive-class F1 on the validation split. Prediction-first selection fixes one model, then one threshold for each \(r\):
+\begin{equation}
+\begin{aligned}
+m^{*}&=\arg\max_{m}\mathrm{F1}_{\mathrm{val}}(m,0.50),\\
+t_{A}^{*}(r)&=\arg\min_{t\in\mathcal{T}}c_{\mathrm{val}}(m^{*},t,r).
+\end{aligned}
+\label{eq:strategy-a}
+\end{equation}
+If several models share the highest validation F1 at 0.50, the tie is broken by the lower validation cost at that same threshold for the \(r\) under consideration, then by model name in alphabetical order. The threshold tie is broken by higher validation F1, then by the lower threshold.
+
+Decision-first selection searches the pairs directly:
+\begin{equation}
+\bigl(m_{B}^{*}(r),t_{B}^{*}(r)\bigr)
+=\arg\min_{m,\,t\in\mathcal{T}}c_{\mathrm{val}}(m,t,r).
+\label{eq:strategy-b}
+\end{equation}
+Ties are broken by higher validation F1 at that threshold, then by model name, then by the lower threshold. Class imbalance is not handled with class weights. The grid search is the mechanism that carries both the base rate and the cost ratio. Neither rule may use the test split.
+
+\section{Experimental design}
+The source file is the UCI Default of Credit Card Clients workbook \cite{yeh2009,yehdata}. It has 30,000 accounts and 6,636 defaults (22.12\%). The identifier column is dropped. The public file contains SEX. SEX is removed before the split because a credit decision policy should not use sex, and this study does not estimate a sex effect. The other 22 predictors are kept as the numeric codes in the file, including education, marriage, age, recent repayment status, bill amounts, and payment amounts.
+
+The split and the bootstrap each use seed 42. The split is stratified. It holds out 6,000 test accounts and then holds out 6,000 validation accounts, leaving 18,000 training accounts. Models are fit only on the training accounts. Selection uses only the validation accounts. Test probabilities are computed after every model and threshold has been chosen.
+
+Four models produce probabilities, with random seed 42 wherever the implementation accepts one, and with no class weight. A logistic regression uses $C = 1$, after a standardizer, with the library's default L2 penalty. The other models are a random forest (200 trees, depth 10, minimum leaf size 5), histogram gradient boosting (200 iterations, depth 6, learning rate 0.1), and XGBoost (200 trees, depth 5, learning rate 0.1). Thresholds run from 0.01 to 0.99 in steps of 0.01. The decision predicts default when the probability is at least the threshold.
+
+Uncertainty is a paired bootstrap of the test accounts: 1,000 resamples, percentile interval from 2.5 to 97.5, seed 42. The same resamples are used for every contrast. The procedure does not refit models and does not rerun selection, so the interval is conditional on the locked rules. It asks whether the test-cost gap is stable to resampling of this test set. The reported contrasts are the strategy difference, test cost of A minus test cost of B, and, for the prediction-first model only, test cost at threshold 0.50 minus test cost at the tuned threshold. A positive strategy difference means decision-first selection has the lower test cost. The relative difference is that gap divided by the prediction-first test cost. If an interval includes zero, the difference is not statistically conclusive.
+
+\section{Results}
+Validation F1 at threshold 0.50 selected histogram gradient boosting (Table~\ref{tab:validation}). Its F1 was higher than that of the random forest, XGBoost, and logistic regression, and the four values were distinct, so the cost tie-break was not used. The prediction-first model is therefore fixed for every cost ratio. As \(r\) increases, the chosen threshold falls. For histogram gradient boosting the validation thresholds are 0.31, 0.16, 0.09, and 0.01. The last of these is the bottom of the grid, so the search could not move lower. Decision-first selection chooses the random forest at \(r=2\), \(r=10\), and \(r=20\), and XGBoost at \(r=5\).
+
+\begin{table}[htbp]
+\centering
+\begin{singlespace}
+\caption{Validation choice for each false-negative cost ratio. Cost is Eq.~\eqref{eq:cost} on the validation split. F1 is the positive-class F1 at the chosen threshold.}
+\label{tab:validation}
+\footnotesize
+\begin{tabular}{@{}r l l c c c@{}}
+\toprule
+\(r\) & Strategy & Model & Threshold & Val.\ cost & Val.\ F1 \\
+\midrule
+2 & A & histogram GB & 0.31 & 0.3075 & 0.5343 \\
+2 & B & random forest & 0.30 & 0.2975 & 0.5502 \\
+5 & A & histogram GB & 0.16 & 0.5485 & 0.5050 \\
+5 & B & XGBoost & 0.16 & 0.5318 & 0.5126 \\
+10 & A & histogram GB & 0.09 & 0.7065 & 0.4414 \\
+10 & B & random forest & 0.10 & 0.6982 & 0.4259 \\
+20 & A & histogram GB & 0.01 & 0.7728 & 0.3656 \\
+20 & B & random forest & 0.06 & 0.7645 & 0.3738 \\
+\bottomrule
+\end{tabular}
+\par\vspace{0.35em}
+\parbox{\linewidth}{\footnotesize Strategy A uses one model for every \(r\), selected by validation F1 at threshold 0.50: logistic regression 0.3694; random forest 0.4658; histogram GB 0.4682; XGBoost 0.4598. The F1 values were distinct, so the cost tie-break was not used. Strategy B minimizes validation cost over models and thresholds. Histogram GB denotes histogram gradient boosting.}
+\end{singlespace}
+\end{table}
+
+On the locked test split, the strategy gap is small relative to the cost of staying at threshold 0.50 (Table~\ref{tab:test} and Figure~\ref{fig:costs}). At \(r=2\), decision-first selection reaches test cost 0.3035 and prediction-first selection reaches 0.3163. The relative difference is 0.0406. The 95\% interval for the cost difference is 0.0050 to 0.0210 and excludes zero, so this difference is statistically conclusive on the present test set. At \(r=5\), the prediction-first cost is slightly lower (0.5762 versus 0.5788; relative difference \(-0.0046\)). The interval includes zero, and the difference is not statistically conclusive. At \(r=10\) and \(r=20\) the point estimates favor decision-first selection (relative differences 0.0401 and 0.0077), but both intervals include zero. Those differences are not statistically conclusive. Decision-first selection is therefore not uniformly cheaper on this file.
+
+\begin{table}[htbp]
+\centering
+\begin{singlespace}
+\caption{Test cost per case after selection was locked. A positive value of \((A-B)/A\) means strategy B has the lower test cost. The 95\% interval is a paired percentile bootstrap of the test-cost difference \(A-B\). It does not refit the models.}
+\label{tab:test}
+\footnotesize
+\begin{tabular}{@{}r l l c c@{}}
+\toprule
+\(r\) & Strategy & Model & Threshold & Test cost \\
+\midrule
+2 & A & histogram GB & 0.31 & 0.3163 \\
+2 & B & random forest & 0.30 & 0.3035 \\
+\multicolumn{5}{@{}p{\linewidth}@{}}{\footnotesize $(A-B)/A = 0.0406$. Cost difference $A-B = 0.0128$, 95\% CI $[0.0050,\ 0.0210]$, includes zero: no.} \\
+\addlinespace
+5 & A & histogram GB & 0.16 & 0.5762 \\
+5 & B & XGBoost & 0.16 & 0.5788 \\
+\multicolumn{5}{@{}p{\linewidth}@{}}{\footnotesize $(A-B)/A = -0.0046$. Cost difference $A-B = -0.0027$, 95\% CI $[-0.0202,\ 0.0147]$, includes zero: yes.} \\
+\addlinespace
+10 & A & histogram GB & 0.09 & 0.7392 \\
+10 & B & random forest & 0.10 & 0.7095 \\
+\multicolumn{5}{@{}p{\linewidth}@{}}{\footnotesize $(A-B)/A = 0.0401$. Cost difference $A-B = 0.0297$, 95\% CI $[-0.0023,\ 0.0655]$, includes zero: yes.} \\
+\addlinespace
+20 & A & histogram GB & 0.01 & 0.7815 \\
+20 & B & random forest & 0.06 & 0.7755 \\
+\multicolumn{5}{@{}p{\linewidth}@{}}{\footnotesize $(A-B)/A = 0.0077$. Cost difference $A-B = 0.0060$, 95\% CI $[-0.0168,\ 0.0272]$, includes zero: yes.} \\
+\bottomrule
+\end{tabular}
+\par\vspace{0.35em}
+\parbox{\linewidth}{\footnotesize For the prediction-first model (histogram GB), test cost at threshold 0.50 versus the cost-tuned threshold: $r=2$, 0.3272 versus 0.3163; $r=5$, 0.7522 versus 0.5762; $r=10$, 1.4605 versus 0.7392; $r=20$, 2.8772 versus 0.7815. Paired bootstrap 95\% CIs for (cost at 0.50 minus cost at the tuned threshold) are $r=2$, $[-0.0008,\ 0.0227]$, includes zero: yes; $r=5$, $[0.1370,\ 0.2147]$, includes zero: no; $r=10$, $[0.6297,\ 0.8035]$, includes zero: no; $r=20$, $[1.9144,\ 2.2858]$, includes zero: no.}
+\end{singlespace}
+\end{table}
+
+The threshold shift is the larger change. Figure~\ref{fig:costs} shows the prediction-first threshold moving from 0.50 down to 0.31, 0.16, 0.09, and 0.01. At \(r=2\), test cost moves from 0.3272 at threshold 0.50 to 0.3163 at the tuned threshold, and that interval includes zero, so the difference is not statistically conclusive. At \(r=5\), \(r=10\), and \(r=20\), the same contrast falls from 0.7522 to 0.5762, from 1.4605 to 0.7392, and from 2.8772 to 0.7815. Those three intervals exclude zero. Once a missed default is several times as costly as a false alarm, publishing a cost-tuned threshold changes the test cost by more than the choice between the two selectors.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=9cm]{Figure_1.pdf}
+\begin{singlespace}
+\caption{Decision framework. Models are fit on the training split only. Strategy A and strategy B are selected on the validation split. The test split is used once, for the costs and the paired bootstrap interval. SEX is excluded before any model is fit.}
+\label{fig:framework}
+\end{singlespace}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=9cm]{Figure_2.pdf}
+\begin{singlespace}
+\caption{Chosen threshold (a) and test cost per case (b) across false-negative cost ratios. Circles are prediction-first selection. Squares are decision-first selection. The dotted line in (a) is the conventional threshold 0.50. Crosses in (b) score the prediction-first model at 0.50. Model names are in Table~\ref{tab:test}.}
+\label{fig:costs}
+\end{singlespace}
+\end{figure}
+
+\section{Implications for entrepreneurial credit decisions}
+A credit operation can write down \(r\), the relative cost of missing a default, and publish the threshold returned by Eq.~\eqref{eq:strategy-a} or Eq.~\eqref{eq:strategy-b}. A smaller lending venture can do the same on its own book. The auditable object is the pair \((r,t)\), not a claim about variable importance. On this file, setting \(r=10\) moves the prediction-first rule from 0.50 to 0.09. That is a change in the decision process of the sort digital-transformation research describes as organizational, not merely technical \cite{vial2019}. It is not evidence about startups. The UCI file contains Taiwanese credit-card clients \cite{yeh2009}. Product, portfolio, and loss given default will differ in another book, and \(r\) here is a scenario weight rather than a measured loss.
+
+\section{Conclusion}
+The useful output of the framework is a threshold tied to a stated cost ratio. On this stratified split, decision-first selection was conclusively cheaper only at \(r=2\). At \(r=5\), \(r=10\), and \(r=20\), the strategy difference was not statistically conclusive, and at \(r=5\) the point estimate favored prediction-first selection. Tuning the prediction-first threshold away from 0.50 changed test cost only modestly at \(r=2\), where the interval included zero, and by a conclusive margin at the three higher ratios. The bootstrap does not refit the models. The \(r=20\) prediction-first threshold sits on the lower edge of the grid. SEX was present in the source file, was excluded from the predictors, and was not used to estimate a sex effect. Within those limits, a lender that can state \(r\) can publish the threshold that \(r\) implies.
+
+\begin{singlespace}
+\section*{Data availability}
+The Default of Credit Card Clients file is the UCI Machine Learning Repository dataset introduced by Yeh and Lien \cite{yeh2009,yehdata} (\url{https://doi.org/10.24432/C55S3H}). The script that regenerates the tables and figures is \texttt{run.py} in \url{https://github.com/pravallika-nalluri-dba/kbs-cost-aware-classification}.
+
+\section*{Declaration of competing interest}
+The author declares that she has no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper.
+
+\section*{Funding}
+This research did not receive any specific grant from funding agencies in the public, commercial, or not-for-profit sectors.
+
+\section*{CRediT authorship contribution statement}
+Pravallika Nalluri: Conceptualization, Methodology, Software, Validation, Formal analysis, Writing -- original draft, Writing -- review and editing.
+
+\section*{Declaration of generative AI and AI-assisted technologies in the manuscript preparation process}
+During the preparation of this work the author used Cursor (Grok) to assist with code structure, experiment implementation, and language editing of the manuscript. After using this tool, the author reviewed and edited the content as needed and takes full responsibility for the content of the published article.
+
+\begin{thebibliography}{9}
+\bibitem{vial2019}
+Gregory Vial, 2019.
+Understanding digital transformation: A review and a research agenda.
+The Journal of Strategic Information Systems 28 (2), 118--144.
+\url{https://doi.org/10.1016/j.jsis.2019.01.003}
+
+\bibitem{lessmann2015}
+Stefan Lessmann, Bart Baesens, Hsin-Vonn Seow, Lyn C. Thomas, 2015.
+Benchmarking state-of-the-art classification algorithms for credit scoring: An update of research.
+European Journal of Operational Research 247 (1), 124--136.
+\url{https://doi.org/10.1016/j.ejor.2015.05.030}
+
+\bibitem{elkan2001}
+Charles Elkan, 2001.
+The foundations of cost-sensitive learning.
+In: Proceedings of the 17th International Joint Conference on Artificial Intelligence (IJCAI 2001), vol.\ 2, pp.\ 973--978.
+Morgan Kaufmann.
+
+\bibitem{provost2001}
+Foster Provost, Tom Fawcett, 2001.
+Robust classification for imprecise environments.
+Machine Learning 42 (3), 203--231.
+\url{https://doi.org/10.1023/A:1007601015854}
+
+\bibitem{yeh2009}
+I-Cheng Yeh, Che-hui Lien, 2009.
+The comparisons of data mining techniques for the predictive accuracy of probability of default of credit card clients.
+Expert Systems with Applications 36 (2), 2473--2480.
+\url{https://doi.org/10.1016/j.eswa.2007.12.020}
+
+\bibitem{yehdata}
+I-Cheng Yeh, 2009.
+Default of Credit Card Clients.
+UCI Machine Learning Repository.
+\url{https://doi.org/10.24432/C55S3H}
+
+\end{thebibliography}
+\end{singlespace}
+
+\end{document}

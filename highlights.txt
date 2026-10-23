@@ -1,0 +1,5 @@
+- Explicit cost ratios turn default probabilities into thresholds.
+- Prediction-first fixes the F1 model, then tunes its threshold.
+- Decision-first has a conclusively lower test cost only at ratio 2.
+- Strategy gaps at ratios 5, 10, and 20 are not statistically conclusive.
+- Tuned thresholds cut test cost at cost ratios 5, 10, and 20.

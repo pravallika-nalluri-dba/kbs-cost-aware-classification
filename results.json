@@ -1,0 +1,335 @@
+{
+  "dataset": {
+    "n_rows": 30000,
+    "n_defaults": 6636,
+    "default_rate": 0.2212,
+    "sex_present_in_source": true,
+    "dropped_columns": [
+      "ID",
+      "SEX"
+    ],
+    "predictors": [
+      "LIMIT_BAL",
+      "EDUCATION",
+      "MARRIAGE",
+      "AGE",
+      "PAY_0",
+      "PAY_2",
+      "PAY_3",
+      "PAY_4",
+      "PAY_5",
+      "PAY_6",
+      "BILL_AMT1",
+      "BILL_AMT2",
+      "BILL_AMT3",
+      "BILL_AMT4",
+      "BILL_AMT5",
+      "BILL_AMT6",
+      "PAY_AMT1",
+      "PAY_AMT2",
+      "PAY_AMT3",
+      "PAY_AMT4",
+      "PAY_AMT5",
+      "PAY_AMT6"
+    ],
+    "n_predictors": 22,
+    "target": "default payment next month",
+    "source_url": "https://archive.ics.uci.edu/static/public/350/default+of+credit+card+clients.zip",
+    "dataset_doi": "10.24432/C55S3H"
+  },
+  "split": {
+    "seed": 42,
+    "stratified": true,
+    "n_train": 18000,
+    "n_validation": 6000,
+    "n_test": 6000,
+    "train_default_rate": 0.2212222222222222,
+    "validation_default_rate": 0.22116666666666668,
+    "test_default_rate": 0.22116666666666668,
+    "procedure": "Hold out 6000 test rows, then hold out 6000 validation rows from the remainder."
+  },
+  "hyperparameters": {
+    "class_weight": null,
+    "logistic_regression": {
+      "pipeline": "StandardScaler then LogisticRegression",
+      "C": 1.0,
+      "solver": "lbfgs",
+      "max_iter": 2000,
+      "penalty": "library default L2"
+    },
+    "random_forest": {
+      "n_estimators": 200,
+      "max_depth": 10,
+      "min_samples_leaf": 5,
+      "max_features": "sqrt"
+    },
+    "hist_gradient_boosting": {
+      "max_iter": 200,
+      "max_depth": 6,
+      "learning_rate": 0.1,
+      "early_stopping": false
+    },
+    "xgboost": {
+      "n_estimators": 200,
+      "max_depth": 5,
+      "learning_rate": 0.1,
+      "subsample": 0.9,
+      "colsample_bytree": 0.9,
+      "scale_pos_weight": "not set"
+    },
+    "random_state": 42,
+    "n_jobs": 1
+  },
+  "threshold_grid": {
+    "min": 0.01,
+    "max": 0.99,
+    "step": 0.01,
+    "n": 99
+  },
+  "validation_f1_at_0.50": {
+    "LogisticRegression": 0.36941964285714285,
+    "RandomForest": 0.46583541147132174,
+    "HistGradientBoosting": 0.4681884409907723,
+    "XGBoost": 0.45980392156862737
+  },
+  "prediction_first": {
+    "tied_models": [
+      "HistGradientBoosting"
+    ],
+    "tie_break_used": false,
+    "fixed_across_ratios": true,
+    "model": "HistGradientBoosting",
+    "display_name": "histogram GB",
+    "validation_f1_at_0.50": 0.4681884409907723,
+    "tie_break_rule": "Highest validation F1 at threshold 0.50. If F1 ties, lower validation cost at threshold 0.50 for that r, then model name."
+  },
+  "selection_rules": {
+    "cost": "(1 * FP + r * FN) / N",
+    "positive_class": "default payment next month = 1",
+    "decision": "predict default if probability >= threshold",
+    "strategy_a_threshold_tie_break": "lower cost, then higher validation F1, then lower threshold",
+    "strategy_b_tie_break": "lower validation cost, then higher validation F1, then model name, then lower threshold",
+    "model_name_order": [
+      "LogisticRegression",
+      "RandomForest",
+      "HistGradientBoosting",
+      "XGBoost"
+    ]
+  },
+  "by_ratio": {
+    "2": {
+      "strategy_a": {
+        "model": "HistGradientBoosting",
+        "display_name": "histogram GB",
+        "threshold": 0.31,
+        "validation_cost": 0.3075,
+        "validation_f1": 0.5343043311613647,
+        "validation_fp": 585,
+        "validation_fn": 630,
+        "test_cost": 0.31633333333333336
+      },
+      "strategy_b": {
+        "model": "RandomForest",
+        "display_name": "random forest",
+        "threshold": 0.3,
+        "validation_cost": 0.2975,
+        "validation_f1": 0.5501716901945822,
+        "validation_fp": 573,
+        "validation_fn": 606,
+        "test_cost": 0.3035
+      },
+      "cost_difference": 0.012833333333333363,
+      "relative_difference": 0.04056902002107491,
+      "bootstrap": {
+        "n_resamples": 1000,
+        "seed": 42,
+        "method": "paired percentile",
+        "interval": "2.5 to 97.5",
+        "contrast": "test cost A minus test cost B",
+        "ci_low": 0.004995833333333338,
+        "ci_high": 0.02100416666666668,
+        "includes_zero": false,
+        "retrained": false
+      },
+      "threshold_effect": {
+        "model": "HistGradientBoosting",
+        "display_name": "histogram GB",
+        "test_cost_at_0.50": 0.32716666666666666,
+        "tuned_threshold": 0.31,
+        "test_cost_at_tuned_threshold": 0.31633333333333336,
+        "difference_0.50_minus_tuned": 0.010833333333333306,
+        "bootstrap": {
+          "contrast": "test cost at 0.50 minus test cost at the tuned threshold",
+          "ci_low": -0.0008375000000000186,
+          "ci_high": 0.02266666666666667,
+          "includes_zero": true,
+          "same_resamples_as_strategy_contrast": true
+        }
+      }
+    },
+    "5": {
+      "strategy_a": {
+        "model": "HistGradientBoosting",
+        "display_name": "histogram GB",
+        "threshold": 0.16,
+        "validation_cost": 0.5485,
+        "validation_f1": 0.5049782997191729,
+        "validation_fp": 1601,
+        "validation_fn": 338,
+        "test_cost": 0.5761666666666667
+      },
+      "strategy_b": {
+        "model": "XGBoost",
+        "display_name": "XGBoost",
+        "threshold": 0.16,
+        "validation_cost": 0.5318333333333334,
+        "validation_f1": 0.5125730251460503,
+        "validation_fp": 1601,
+        "validation_fn": 318,
+        "test_cost": 0.5788333333333333
+      },
+      "cost_difference": -0.002666666666666595,
+      "relative_difference": -0.004628290425224058,
+      "bootstrap": {
+        "n_resamples": 1000,
+        "seed": 42,
+        "method": "paired percentile",
+        "interval": "2.5 to 97.5",
+        "contrast": "test cost A minus test cost B",
+        "ci_low": -0.020170833333333336,
+        "ci_high": 0.014666666666666606,
+        "includes_zero": true,
+        "retrained": false
+      },
+      "threshold_effect": {
+        "model": "HistGradientBoosting",
+        "display_name": "histogram GB",
+        "test_cost_at_0.50": 0.7521666666666667,
+        "tuned_threshold": 0.16,
+        "test_cost_at_tuned_threshold": 0.5761666666666667,
+        "difference_0.50_minus_tuned": 0.17599999999999993,
+        "bootstrap": {
+          "contrast": "test cost at 0.50 minus test cost at the tuned threshold",
+          "ci_low": 0.13699166666666668,
+          "ci_high": 0.214675,
+          "includes_zero": false,
+          "same_resamples_as_strategy_contrast": true
+        }
+      }
+    },
+    "10": {
+      "strategy_a": {
+        "model": "HistGradientBoosting",
+        "display_name": "histogram GB",
+        "threshold": 0.09,
+        "validation_cost": 0.7065,
+        "validation_f1": 0.44135630906058926,
+        "validation_fp": 2879,
+        "validation_fn": 136,
+        "test_cost": 0.7391666666666666
+      },
+      "strategy_b": {
+        "model": "RandomForest",
+        "display_name": "random forest",
+        "threshold": 0.1,
+        "validation_cost": 0.6981666666666667,
+        "validation_f1": 0.42590027700831024,
+        "validation_fp": 3219,
+        "validation_fn": 97,
+        "test_cost": 0.7095
+      },
+      "cost_difference": 0.02966666666666662,
+      "relative_difference": 0.04013528748590749,
+      "bootstrap": {
+        "n_resamples": 1000,
+        "seed": 42,
+        "method": "paired percentile",
+        "interval": "2.5 to 97.5",
+        "contrast": "test cost A minus test cost B",
+        "ci_low": -0.002333333333333301,
+        "ci_high": 0.06550416666666667,
+        "includes_zero": true,
+        "retrained": false
+      },
+      "threshold_effect": {
+        "model": "HistGradientBoosting",
+        "display_name": "histogram GB",
+        "test_cost_at_0.50": 1.4605,
+        "tuned_threshold": 0.09,
+        "test_cost_at_tuned_threshold": 0.7391666666666666,
+        "difference_0.50_minus_tuned": 0.7213333333333333,
+        "bootstrap": {
+          "contrast": "test cost at 0.50 minus test cost at the tuned threshold",
+          "ci_low": 0.6297291666666667,
+          "ci_high": 0.8035208333333334,
+          "includes_zero": false,
+          "same_resamples_as_strategy_contrast": true
+        }
+      }
+    },
+    "20": {
+      "strategy_a": {
+        "model": "HistGradientBoosting",
+        "display_name": "histogram GB",
+        "threshold": 0.01,
+        "validation_cost": 0.7728333333333334,
+        "validation_f1": 0.3655676645054491,
+        "validation_fp": 4597,
+        "validation_fn": 2,
+        "test_cost": 0.7815
+      },
+      "strategy_b": {
+        "model": "RandomForest",
+        "display_name": "random forest",
+        "threshold": 0.06,
+        "validation_cost": 0.7645,
+        "validation_f1": 0.37379466817923995,
+        "validation_fp": 4407,
+        "validation_fn": 9,
+        "test_cost": 0.7755
+      },
+      "cost_difference": 0.006000000000000005,
+      "relative_difference": 0.007677543186180429,
+      "bootstrap": {
+        "n_resamples": 1000,
+        "seed": 42,
+        "method": "paired percentile",
+        "interval": "2.5 to 97.5",
+        "contrast": "test cost A minus test cost B",
+        "ci_low": -0.016837500000000033,
+        "ci_high": 0.027170833333333335,
+        "includes_zero": true,
+        "retrained": false
+      },
+      "threshold_effect": {
+        "model": "HistGradientBoosting",
+        "display_name": "histogram GB",
+        "test_cost_at_0.50": 2.8771666666666667,
+        "tuned_threshold": 0.01,
+        "test_cost_at_tuned_threshold": 0.7815,
+        "difference_0.50_minus_tuned": 2.095666666666667,
+        "bootstrap": {
+          "contrast": "test cost at 0.50 minus test cost at the tuned threshold",
+          "ci_low": 1.9144416666666668,
+          "ci_high": 2.2858458333333336,
+          "includes_zero": false,
+          "same_resamples_as_strategy_contrast": true
+        }
+      }
+    }
+  },
+  "bootstrap": {
+    "n_resamples": 1000,
+    "seed": 42,
+    "method": "paired percentile",
+    "retrained": false
+  },
+  "elapsed_seconds": 5.384961401000055,
+  "library_versions": {
+    "numpy": "2.5.4",
+    "pandas": "3.1.0",
+    "scikit-learn": "1.9.1",
+    "xgboost": "3.4.1",
+    "matplotlib": "3.11.2"
+  }
+}
