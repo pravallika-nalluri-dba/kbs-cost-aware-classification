@@ -389,7 +389,7 @@ def save_figure_2(path: Path, results: dict) -> None:
     axes[0].set_ylim(min(threshold_limits) - 0.05, 0.64)
     axes[0].set_ylabel("Threshold")
     axes[0].text(0.02, 0.90, "(a)", transform=axes[0].transAxes, fontsize=8, fontweight="bold")
-    axes[0].legend(frameon=False, loc="upper right", handlelength=1.6, borderaxespad=0.2)
+    axes[0].legend(frameon=False, loc="upper right", bbox_to_anchor=(0.99, 0.76), handlelength=1.5, borderaxespad=0.0)
     axes[0].spines["top"].set_visible(False)
     axes[0].spines["right"].set_visible(False)
     axes[0].grid(axis="y", color="#dddddd", linewidth=0.4)
