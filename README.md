@@ -2,7 +2,7 @@
 
 This repository reproduces a short communication on cost-aware credit decisions. Two validation rules turn predicted default probabilities into a thresholded action. Strategy A (prediction-first) fixes the model by validation F1 at threshold 0.50, then chooses a cost-minimizing threshold. Strategy B (decision-first) chooses the model and the threshold together by validation cost. The test split is scored once.
 
-The primary split and the bootstrap use seed 42. The same split is repeated for seeds 42 through 61. Model fitting keeps random seed 42, so only the partition changes. The min, median, and max across those splits are a stability range, not a confidence interval. A separate percentile bootstrap, 1,000 resamples and seed 42, intervals the mean of the 20 split-level cost differences. That interval is not the seed-42 test-set bootstrap.
+The primary split and the bootstrap use seed 42. The same split is repeated for seeds 42 through 61. Model fitting keeps random seed 42, so only the partition changes. The min, median, and max across those splits are a stability range, not a confidence interval. A separate percentile bootstrap, 1,000 resamples and seed 42, intervals the mean of the 20 split-level cost differences. That interval is not the seed-42 test-set bootstrap. The 20 splits reuse the same 30,000 accounts, so the interval measures partition stability on this file, not an independent population replication.
 
 For ratio 20, after the primary grid is locked, the script also searches thresholds 0.001 to 0.009. On seed 42 that search moves the prediction-first threshold from 0.01 to 0.009 and does not lower test cost. Validation Brier scores are recorded and do not enter selection.
 
