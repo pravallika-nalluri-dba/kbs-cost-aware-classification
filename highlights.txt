@@ -1,5 +1,5 @@
 - Most of the cost saving comes from the threshold, not the model.
 - The cost ratio is explicit knowledge: the inspectable pair (r, t).
-- Leaving 0.50 cuts cost at ratios 5, 10, and 20 on every split.
+- Leaving 0.50 cuts cost at every ratio on every split.
 - Seed-42 strategy gap excludes zero only at cost ratio 2.
 - At ratio 20, 0.009 does not lower the seed-42 test cost.

@@ -1,0 +1,9 @@
+r,strategy,model,threshold,test_cost
+2,A,XGBoost,0.31,0.31216666666666665
+2,B,random forest,0.3,0.3035
+5,A,XGBoost,0.15,0.5755
+5,B,XGBoost,0.15,0.5755
+10,A,XGBoost,0.09,0.723
+10,B,random forest,0.1,0.7095
+20,A,XGBoost,0.01,0.7775
+20,B,random forest,0.06,0.7755

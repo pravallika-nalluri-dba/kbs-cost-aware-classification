@@ -1,0 +1,49 @@
+{
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "platform": "Linux-6.12.94+-x86_64-with-glibc2.39",
+  "numpy": "2.5.4",
+  "pandas": "3.1.0",
+  "sklearn": "1.9.1",
+  "xgboost": "3.4.1",
+  "primary_seed": 42,
+  "model_seed": 42,
+  "repeat_seeds": [
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61
+  ],
+  "bootstrap_resamples": 1000,
+  "primary_grid": [
+    0.01,
+    0.99,
+    0.01
+  ],
+  "r20_fine_grid": [
+    0.001,
+    0.009,
+    0.001
+  ],
+  "cost_ratios": [
+    2,
+    5,
+    10,
+    20
+  ]
+}

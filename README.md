@@ -4,20 +4,28 @@ This repository reproduces a short communication on cost-aware credit decisions.
 
 The primary split and the bootstrap use seed 42. The same split is repeated for seeds 42 through 61. Model fitting keeps random seed 42, so only the partition changes. The min, median, and max across those splits are a stability range, not a confidence interval. A separate percentile bootstrap, 1,000 resamples and seed 42, intervals the mean of the 20 split-level cost differences. That interval is not the seed-42 test-set bootstrap. The 20 splits reuse the same 30,000 accounts, so the interval measures partition stability on this file, not an independent population replication.
 
-For ratio 20, after the primary grid is locked, the script also searches thresholds 0.001 to 0.009. On seed 42 that search moves the prediction-first threshold from 0.01 to 0.009 and does not lower test cost. Validation Brier scores are recorded and do not enter selection.
+For ratio 20, after the primary grid is locked, the script also searches thresholds 0.001 to 0.009 for the prediction-first model. On seed 42 that search moves the threshold from 0.01 to 0.009. Validation cost improves and test cost does not. Validation Brier scores are recorded and do not enter selection.
 
-The manuscript is [`manuscript.tex`](manuscript.tex).
+The reported numbers are the CSV files in [`results/`](results/). The manuscript is [`manuscript.tex`](manuscript.tex). The Word source file for submission is [`Nalluri_KBS_SourceFile.docx`](Nalluri_KBS_SourceFile.docx).
 
 ## Reproduce
 
-Python 3.12 is the version used for the reported run. From this directory:
+Python 3.12 is the version used for the reported run, with the package versions in `requirements.txt`. From this directory:
 
 ```bash
 pip install -r requirements.txt
-python run.py
+python3 run.py
 ```
 
-`python run.py` downloads the UCI Default of Credit Card Clients workbook (30,000 accounts) into `data_cache/` on the first run, fits the models, and writes `results.json`, `Figure_1.pdf`, and `Figure_2.pdf`. A network connection is required for that first download. Later runs reuse the cache. The script then checks that the test costs and thresholds printed in `manuscript.tex` match `results.json`, and it exits with a non-zero status if they differ.
+`python3 run.py` downloads the UCI Default of Credit Card Clients workbook (30,000 accounts) into `data_cache/` on the first run, fits the models, and rewrites `results/`, `Figure_1.pdf`, and `Figure_2.pdf`. A network connection is required for that first download. Later runs reuse the cache. The `.xls` file is read with `xlrd` directly. The script then checks that the costs and thresholds printed in `manuscript.tex` match `results/`, and it exits with a non-zero status if they differ.
+
+Random forest and XGBoost are fit with `n_jobs=-1`, which is the setting that produced `results/`. Histogram gradient boosting uses the library default for early stopping.
+
+To check the manuscript against the committed results without refitting:
+
+```bash
+python3 run.py --check-only
+```
 
 Optional manuscript PDF:
 
@@ -28,7 +36,7 @@ pdflatex manuscript.tex
 ## Figures
 
 - `Figure_1.pdf` is the seed-42 validation cost of the prediction-first model against the threshold, one panel for each cost ratio. The circle is the chosen threshold. The dotted line is threshold 0.50.
-- `Figure_2.pdf` is a plot from this run. Markers are the seed-42 rules. Panel (a) shows the chosen threshold against the false-negative cost ratio for both strategies. Panel (b) shows the test cost per case, including strategy A scored at threshold 0.50. Whiskers are the minimum and maximum over 20 stratified splits (seeds 42 through 61). They are not a confidence interval. The bootstrap interval in the manuscript is only for seed 42.
+- `Figure_2.pdf` plots this run. Markers are the seed-42 rules. Panel (a) shows the chosen threshold against the false-negative cost ratio for both strategies. Panel (b) shows the test cost per case, including strategy A scored at threshold 0.50. Whiskers are the minimum and maximum over 20 stratified splits (seeds 42 through 61). They are not a confidence interval. The seed-42 bootstrap interval in the manuscript is a different calculation from the 20-split interval.
 
 ## License
 
